@@ -33,6 +33,22 @@ bcftools merge -l nbrisk.txt -Oz -o newborn103_vep_merged.vcf.gz --threads 10 -W
 bcftools +setGT newborn103_vep_merged.vcf.gz -- -t . -n 0/0 | bgzip > newborn103_vep_merged_ref.vcf.gz
 ```
 
+#### Quality control (remove missing ALT)
+`bcftools view -e 'ALT = "."' newborn103_vep_merged.vcf.gz -Oz -o newborn103_vep_merged_rmmissingalt.vcf.gz --threads 10`
+
+
+#### Calculate the AF (sex chromosome excluded)
+```bash
+# since AF calculation might be incorrect on sex chromosomes, only conduct AF calculation on normal chromosomes
+vcftools --gzvcf new_merge_ref.vcf.gz \
+  --chr chr1 --chr chr2 --chr chr3 --chr chr4 --chr chr5 \
+  --chr chr6 --chr chr7 --chr chr8 --chr chr9 --chr chr10 \
+  --chr chr11 --chr chr12 --chr chr13 --chr chr14 --chr chr15 \
+  --chr chr16 --chr chr17 --chr chr18 --chr chr19 --chr chr20 \
+  --chr chr21 --chr chr22 \
+  --freq --out AF.autosomes
+```
+
 #### Python and configuration file to decipher the merged files. 
 
 #### Analysed results visualizations 
