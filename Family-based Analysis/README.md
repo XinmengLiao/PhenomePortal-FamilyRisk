@@ -1,11 +1,10 @@
-Family-based anlaysis could be only be conducted for a single family by `gatk` or `gatk4` installed with conda.
+Family based analysis will be performed simply by Python and R scripts, since the GATK and slivar always fail. 
 
-####  GATK PhaseByTransmission
+#### Remove variants with any missing allele (./.)
 ```bash
-gatk PhaseByTransmission \
-  -R /mnt/storage_pool/Genomics/VarXOmics/tools/picard/hg38.fa \
-  -V F1_merged_rmmissingalt_biallelic.vcf.gz \
-  --pedigree F1.ped \
-  -O F1_gatk.vcf.gz \
-  --default-qual 30.0
+
 ```
+
+#### Parse variants by python into text file 
+
+#### Count the disease in text file 
