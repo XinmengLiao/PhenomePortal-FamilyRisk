@@ -1,10 +1,22 @@
 Family based analysis will be performed simply by Python and R scripts, since the GATK and slivar always fail. 
 
-#### Remove variants with any missing allele (./.)
-```bash
+#### Input files
+1. Family merged vcf.gz file
+2. Family ped file
 
+#### 1. Remove missing ALT and split into biallelic
+```bash
+# remove missing ALT
+bcftools view -e 'ALT = "."' ${family}.vcf.gz -Oz -o ${family}_rmmissingalt.vcf.gz --threads 20
+
+# split into biallelic
+bcftools norm -m -both -Oz -o ${family}_biallelic.vcf.gz ${family}_rmmissingalt.vcf.gz --threads 20
 ```
 
-#### Parse variants by python into text file 
+#### 2. VEP annotation
 
-#### Count the disease in text file 
+#### 3. Parse variants by python into text file 
+`Scripts/family.py`
+
+#### 4. Pedigree plot in R 
+`Scripts/pedigree.R`
