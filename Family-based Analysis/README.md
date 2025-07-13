@@ -17,6 +17,11 @@ bcftools norm -m -both -Oz -o ${family}_biallelic.vcf.gz ${family}_rmmissingalt.
 
 #### 3. Parse variants by python into text file 
 `Scripts/family.py`
+```bash
+for i in {1..11}; do \
+  /usr/local/bin/python3 ../Scripts/family/family.py F${i}/F${i}_merged_rmmissingalt_biallelic.vcf.gz F$i/F${i}.txt F$i/F${i}.ped;
+done
+```
 
 #### 4. Pedigree plot in R 
 `Scripts/pedigree.R`
