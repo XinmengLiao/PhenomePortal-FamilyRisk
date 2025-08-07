@@ -6,7 +6,7 @@
 - Screening Result Summary:
   - Positive Monogenic Diseases: `monogenic_positive_results.txt`
   - Carrier Status: `carrier_status_results.txt`
-  - Figure for positive monogenic diseases: `Monogenic_details.png`
+  - Figure for positive monogenic diseases: `Figures/Monogenic_details.png`
 - Disease Ontology:
   - Positive Monogenic Diseases: `Positive.ontology.count.txt`
   - Carrier Status: `Carrrier.ontology.count.txt`
