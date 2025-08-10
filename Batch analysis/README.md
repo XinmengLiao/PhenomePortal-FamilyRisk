@@ -1,3 +1,19 @@
+This is the script for analysing merged batch samples' vcf file. 
+
+### Inputs:
+- compressed merged vcf file (need `vcf.gz`)
+
+### Command for anlaysis
+```bash
+newbornrisk='/mnt/storage_pool/Genomics/Genome/NewbornRisk'
+bash NewbornRisk_batch.sh \
+  -i newborn103 \
+  -v $newbornrisk/examples/P0064/newborn103_merged.vcf.gz \
+  -o $newbornrisk/examples/P0064 \
+  --sample-metadata $newbornrisk/examples/P0064/newborn103gender.txt \
+  --genome GRCH38 --only-pass yes --fork 48 --threads 20 --genedb TR
+```
+
 ## UI Design
 
 ### Summary 
