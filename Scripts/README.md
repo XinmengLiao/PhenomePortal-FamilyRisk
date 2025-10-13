@@ -1,7 +1,13 @@
+## Function selection
+  a) Single sample screening and reporting \
+  b) Batch samples screening and exploration \
+  c) Family-based batch samples screening and inheritance identification
+
 ## Input options:
   a) VCF file (same as XOmics and VarXOmics) \
-  b) PED file 
-
+  b) PED file (required for family-based batch sample screening)
+  c) SampleID list (required for single and batch sample screening)
+  
 ## Filtrations on the home page:
 ### Sequencing quality filtrations
    a) Reference genome version: GRCH37 or GRCH38 \
@@ -42,9 +48,9 @@
   b) BabyDetect \
   c) BabyScreen+ \
   d) GUARDIAN \
-  e) NC NEXUS \ 
+  e) NC NEXUS \
   f) NBScreening \
   g) Customized list (user should upload their own list in fixed format) 
 
-Screening lists could be found in `Screening lists`
+Screening lists could be found in the local server `/path_to_NewbornRisk/Datasets/genelists/`
    
