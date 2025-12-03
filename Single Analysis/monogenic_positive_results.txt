@@ -1,0 +1,2 @@
+Message
+No positive monogenic disease variant detected based on the current gene panel and filtering criteria.

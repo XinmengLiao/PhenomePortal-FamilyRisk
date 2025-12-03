@@ -1,0 +1,5 @@
+Content	Count
+Sample ID	NW_001_C
+Sex	Female
+Filtered variants	307
+Clinical P/LP variants	0
