@@ -28,3 +28,4 @@ It would be better if the following details could be presented:
 1) Sample and variant summary: `general_summary.txt`
 2) Screen-positive results (only caused by ClinVar and ACMG P/LP variants): `carrier_status_results.txt`
 3) Disease carrier status (only caused by ClinVar and ACMG P/LP variants): `monogenic_positive_results.txt`
+4) PGx information (HTML/JSON from PharmCat)
