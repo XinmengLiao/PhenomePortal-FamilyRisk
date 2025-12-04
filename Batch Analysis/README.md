@@ -48,8 +48,8 @@ A table showing all the filtered variants, with allele frequency: `inhouse_allel
 A table showing all the variant annotations: `newborn103_vep_merged_rmmissingalt_biallelic.txt`
 
 ### 5) PGS density plot and the scores for all individual
-A) Table of PGS scores: `newborn103_pgs.txt` \
-B) Density plot compared with other populations: `PRS_density.png` \
+A) Table of PGS scores: `cohort_PGS.txt` \
+B) Density plot compared with other populations: `PGS_Znorm1_DensityPlot.png` and `PGS_Znorm2_DensityPlot.png` \
 C) Link out to the PGS-Catalog HTML file: `report.html`
 
 ### 6) Statistics of PGx summary. The reports for each individual could be downloaded as compressed file.
