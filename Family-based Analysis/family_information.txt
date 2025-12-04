@@ -1,0 +1,4 @@
+Relationship	sampleID	Sex
+Kid1	NW_001_C	Female
+Father	NW_001_F	Male
+Mother	NW_001_M	Female
