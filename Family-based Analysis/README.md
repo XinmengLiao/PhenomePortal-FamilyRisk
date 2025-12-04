@@ -1,8 +1,10 @@
 ### Overview
 NewbornRisk location on server: `/mnt/storage_pool/Genomics/Genome/NewbornRisk`
 1. Script for family analysis: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/NewbornRisk_family.sh`
-2. Example output files: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/F4`
-3. Input file for example:
+2. Script for manage the annotated variants from VEP: ``
+3. Script for manage the python result: `Pedigree_Analysis20251203.R`
+4. Example output files: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/F4`
+5. Input file for example:
    - Merged VCF file: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/F4/F4_merged.vcf.gz`
    - Family information PED file: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/F4/F4.ped`
   
@@ -17,31 +19,39 @@ bash NewbornRisk_family.sh \
   --only-pass yes --genome GRCH38 --genedb TR \
   --fork 20 --threads 20
 ```
-* feels like the --fork and --threads do not work, it stops the VEP processes
 
 ### UI design
-#### Summary 
-- Family Information: `F4_family_information.txt`
-- Variant Highlights (three tabs):
-  - Screen-positive Neonatal Diseases and Disease carrier status (Caused by ClinVar and ACMG (likely) pathogenic variants): `F4_plp_brief.txt`
-  - Loss-of-function: `F4_high_brief.txt`
-  - Other predicted variants: `F4_predict_brief.txt`
-- Variant Pedigree Analysis: pedigree figures for each variant presented in files ends with `pedigree_plot.png`, such as `F4_BRCA1_c.2197_2201del_pedigree_plot.png` and `F4_C8B_c.1282C>T_pedigree_plot.png` \
-(These pedigree plots are only generated for P/LP variants. There could be a RUN function for users to generate plots for other variants.)
+It will be nice if the following contents could be included in the webpage:
+1) Family details and variant summary.
+2) Screen-positive rare diseases and carrier status.
+3) Pedigree plots for the variants of screen-positive diseases.
+4) Pedigree plot generator for varant of interest.
+5) PGS information.
+6) PGx information.
+
+#### 1) Family details and variant summary.
+1. The table of family details: `family_information.txt`
+2. The table of variant summary: `variant_summary.txt`
+
+#### 2) Screen-positive rare diseases and carrier status
+1. Table of screen-positive rare disease: `carrier_status_results.txt`
+2. Table of carrier status: `monogenic_positive_results.txt`
+* Note: Only diseases caused by ClinVar or ACMG P/LP variants will be shown as default. 
+
+#### 3) Pedigree plots for the variants of screen-positive diseases.
+The plot will be automatical generated: `F1_IDH3A_c.802G>A_pedigree_plot.png`
+
+#### 4) Pedigree plot generator for varant of interest
+Users could choose their variant of interest to generate additional pedigree plot showing the inheritance paths. 
+Script for this function: `Pedigree_Analysis_subset20251203.R`
+
+#### 5) PGS information
+1. Table of the family PGS scores: `rwgs-F1_pgs.txt`
+2. Report for the PGS score: `report.html`
+
+#### 6) PGx information
+Results from PharmCat in HTML and/or JSON file. Have not done yet. 
+
 <img width="1920" height="968" alt="image" src="https://github.com/user-attachments/assets/e5e2181f-5fee-4816-a1d9-479c980d8f26" />
 <img width="1914" height="737" alt="image" src="https://github.com/user-attachments/assets/e662948e-4134-4d15-8f65-dc333222be90" />
-
-#### Overall Variant Statistics
-- VEP statistics and figures: `F4_vep_annotated.vcf.gz_summary.html`. The figures and tables could be used directly and presented in the web server. 
-- Newborn Variant Statistics: `Kid0Pattern_P001_263_Variant_statistics.png`
-
-
-
-#### Variant Details
-`F4_detailed_table.txt`
-
 <img width="1917" height="732" alt="image" src="https://github.com/user-attachments/assets/ff26aba1-6aff-462f-b903-83b59b456f69" />
-
-
-#### PGx 
-PGx results for each kids: files ends with `PGx.txt`, such as `F4_P001_263_PGx.txt`
