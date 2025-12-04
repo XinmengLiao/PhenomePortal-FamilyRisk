@@ -1,0 +1,3 @@
+Content	Count
+Filtered variants	303
+Clinical P/LP variants	1

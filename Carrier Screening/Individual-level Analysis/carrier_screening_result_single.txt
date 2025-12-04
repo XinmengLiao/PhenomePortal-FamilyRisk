@@ -1,0 +1,2 @@
+Disease	Inheritance	Genes	X.CHROM	POS	REF	ALT	HGVSc	HGVSp	Zygosity	ClinVar_CLNSIG	acmg_classification	IMPACT	MAX_AF
+IDH3A-related mitochondrialencephalopathy	AR	IDH3A	chr15	78165014	G	A	c.802G>A	p.Gly268Arg	Heterozygous	Uncertain_significance	Likely_pathogenic	MODERATE	2.519e-05

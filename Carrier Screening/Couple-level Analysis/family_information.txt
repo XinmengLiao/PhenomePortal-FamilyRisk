@@ -1,0 +1,3 @@
+SampleID	Relationship
+NW_001_F	Father
+NW_001_M	Mother
