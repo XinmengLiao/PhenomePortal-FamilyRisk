@@ -14,6 +14,7 @@ conflicted::conflicts_prefer(httr::content)
 conflicted::conflicts_prefer(plotly::layout)
 
 ## ---- Define file paths ----
+location = "local" # server or local 
 args <- commandArgs(trailingOnly = TRUE)
 sampleID <- args[1]
 result_file <- args[2]
@@ -21,27 +22,31 @@ gender <- args[3]
 output_dir <- args[4]
 genelist <- args[5]
 
-result_file <- "/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/rwgs/rwgs_F1.txt"
-gender <- "Female"
-output_dir <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Results20251124/'
-genelist <- "TR"
+if (location == "local"){
+  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
+  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+}
 
-compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
-TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Scripts/MainFunctions/batch/TRpipelineRemovedVariants.txt'
-genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+if (location == "server"){
+  compare_file <- '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/NBSeq_Results.xlsx'
+  TR_removed_variant <- '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list_GenCC_20251125.txt"
+}
+
 
 ## ---- Load files ----
 result <- read.csv(result_file,header = T,sep = "\t") 
 colnames(result) <- gsub("am_","AlphaMissense_", colnames(result))
 genelist <- unlist(strsplit(genelist,","))
 
-genedb <- read.csv(genedb_file,header = T,sep = "\t") %>% filter(Project == "NBScreening")
+genedb <- read.csv(genedb_file,header = T,sep = "\t") %>% filter(Project %in% genelist)
 genedb1 <- genedb %>% select(Genes, MIM, Inheritance, Disorder_Group,GenCC_Classification, GenCC_Submitter ) %>% unique()
-result1 <- result %>% select(-NW_001_F, -NW_001_M) %>% 
-  filter(!grepl("\\./\\.",NW_001_C)) %>% unique() %>% mutate(MIM = as.character(MIM)) %>% 
+result1 <- result %>% 
+  mutate(MIM = as.character(MIM)) %>% 
   left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
   
-if ("TR" %in% genelist){
+if ("NBScreening" %in% genelist){
   remove.variant <- read.csv(TR_removed_variant, header = T, sep = "\t")
   result <- result %>% filter(!(variant_info %in% remove.variant$variant_info))
 }
@@ -133,7 +138,7 @@ result1 <- genotype.count.single(result, sampleid = sampleID, gender = gender)
 plp.positive <- positive.monogenic.plp.single(result1)
 
 # carrier status 
-if("TR" %in% genelist){
+if("NBScreening" %in% genelist){
   result_carrier <- result1 %>% 
     filter(Genes != "MEFV" & HGVSp != "p.Met694Val") %>% 
     filter(Genes != "MEFV" & HGVSp != "p.Met680Ile")
@@ -153,3 +158,4 @@ if(nrow(carrier.status) == 0){
 }
 write.table(plp.positive, paste0(output_dir, "/monogenic_positive_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 write.table(carrier.status, paste0(output_dir, "/carrier_status_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+
