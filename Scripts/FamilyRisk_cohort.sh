@@ -465,7 +465,7 @@ if [[ "$RUNPRS" == "yes" ]]; then
 
     if [[ -n "$PGSID" ]]; then
     echo "Use PGSID: $PGSID. "
-    conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Single.sh \
+    conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
         -i $INPUT_SAMPLE \
         -o $OUTPUT_DIR/PRS \
         -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
@@ -478,7 +478,7 @@ if [[ "$RUNPRS" == "yes" ]]; then
 
     elif [[ -n "$PGPID" ]]; then
         echo "Use PGPID: $PGPID. "
-        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Single.sh \
+        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
             -i $INPUT_SAMPLE \
             -o $OUTPUT_DIR/PRS \
             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
@@ -491,7 +491,7 @@ if [[ "$RUNPRS" == "yes" ]]; then
 
     elif [[ -n "$EFOID" ]]; then
         echo "Use EFOID: $EFOID. "
-        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Single.sh \
+        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
             -i $INPUT_SAMPLE \
             -o $OUTPUT_DIR/PRS \
             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
