@@ -44,35 +44,17 @@ config = {
         "fileName": sys.argv[1],
         "output_file": sys.argv[2],
         "meta_file": sys.argv[3],
-        "pgx_file": '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/AllPGx_annotation1218.txt',
-        "hap_var": '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/All_Haplotype_var1218.txt',
-        "hap_rsid": '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/All_Haplotype_rsID1218.txt',
         'genedb_file': sys.argv[19],
-        'babyseq': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/BabySeq.txt',
-        'earlycheck': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/EarlyCheck.txt',
-        'babydetect': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/BabyDetect.txt',
-        'babyscreen': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/BabyScreen.txt',
-        'guardian':'/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Guardian.txt',
-        'gemonic101': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Genomic101.txt',
-        'TR': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/NBScreening.txt',
-        'ACMG':'/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/ACMGv3.3.txt'
+        'customized_genedb_file': sys.argv[20],
+        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list.txt'
     },
     "sysmed": {
         "fileName": sys.argv[1],
         "output_file": sys.argv[2],
         "meta_file": sys.argv[3],
-        "pgx_file": '/mnt/storage_pool/Genomics/Genome/database-files/AllPGx_annotation1218.txt',
-        "hap_var": '/mnt/storage_pool/Genomics/Genome/database-files/All_Haplotype_var1218.txt',
-        "hap_rsid": '/mnt/storage_pool/Genomics/Genome/database-files/All_Haplotype_rsID1218.txt',
         'genedb_file': sys.argv[19],
-        'babyseq': '/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/BabySeq.txt',
-        'earlycheck': '/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/EarlyCheck.txt',
-        'babydetect': '/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/BabyDetect.txt',
-        'babyscreen': '/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/BabyScreen.txt',
-        'guardian':'/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/Guardian.txt',
-        'gemonic101': '/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/Genomic101.txt',
-        'TR': '/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/NBScreening.txt',
-        'ACMG':'/mnt/storage_pool/Genomics/Genome/NewbornRisk/Datasets/genelists/ACMGv3.3.txt'
+        'customized_genedb_file': sys.argv[20],
+        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list.txt'   
     }
 }
 
@@ -119,41 +101,26 @@ def read_db_file(filepath, encoding="ISO-8859-1", sep="\t", fillna_str="No info"
     df = df.replace(np.nan, fillna_str)
     return df
 
+# GeneDB list
+if cfg["genedb_file"] != "" and cfg["customized_genedb_file"] == "":
+    print("Useing predefined genedb option.")
+    project_list = cfg["genedb_file"].split(',')
+    genedb = pd.read_csv(cfg["screening_list"], sep="\t")
+    genedb = genedb[genedb['Project'].isin(project_list)]
+elif cfg["customized_genedb_file"] != "" and cfg["genedb_file"] == "":
+    print("Using customized genedb file.")
+    genedb = pd.read_csv(cfg["customized_genedb_file"], sep="\t")
+elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "":
+    print("Using default Newborn Screening List.")
+    genedb = pd.read_csv(cfg["screening_list"], sep="\t")
+    genedb = genedb[genedb['Project'].isin(['NBScreening'])]
+else:
+    raise ValueError("Please provide either a predefined genedb option or a customized genedb file.")
+
 # SampleID
 meta = pd.read_csv(cfg["meta_file"], sep="\t", header=None)
 meta.columns = ["Sample", "Sex"]
 
-
-# PGx
-Pharma_db =pd.read_csv(cfg["pgx_file"], sep="\t")
-# Read the haplotype variants data
-with open(cfg["hap_var"], 'r') as file:
-    haplotype_var = set(file.read().strip().splitlines())
-with open(cfg["hap_rsid"], 'r') as file:
-    haplotype_rsID = set(file.read().strip().splitlines())
-
-pharmgkb_data = pd.read_csv(cfg["pgx_file"], sep="\t")
-pgx_set = set(pharmgkb_data['Variant.Haplotypes'].to_list())
-
-# GeneDB list
-genedb_option = cfg["genedb_file"]
-print(genedb_option)
-if genedb_option == "babyseq":
-    genedb = pd.read_csv(cfg["babyseq"], sep="\t")
-elif genedb_option == "earlycheck":
-    genedb = pd.read_csv(cfg["earlycheck"], sep="\t")
-elif genedb_option == "babydetect":
-    genedb = pd.read_csv(cfg["babydetect"], sep="\t")
-elif genedb_option == "babyscreen":    
-    genedb = pd.read_csv(cfg["babyscreen"], sep="\t")
-elif genedb_option == "guardian":
-    genedb = pd.read_csv(cfg["guardian"], sep="\t")
-elif genedb_option == "TR":
-    genedb = pd.read_csv(cfg["TR"], sep="\t")
-elif genedb_option == "ACMG":
-    genedb = pd.read_csv(cfg["ACMG"], sep="\t")
-elif genedb_option == "gemonic101": 
-    genedb = pd.read_csv(cfg["gemonic101"], sep="\t")
 
 #%%Cell 2 start the analysis program for the vep annotated vcf files, generated report A B C and D
 # ==============================================================================
@@ -176,7 +143,7 @@ def extract_decimal_from_string(s):
 file = gzip.open(cfg["fileName"],'rt')
 tLine = file.readline()
 i = 0
-reportA,reportgwas, reportpgx, reporteqtl = [], [], [], []
+reportA,reportgwas, reporteqtl = [], [], []
 
 while tLine:
     # remove the newline character
@@ -207,7 +174,7 @@ while tLine:
     iText = [s for s in iContent[headings.index('INFO')].split(';') if 'CSQ=' in s]
     iText = iText[0].replace('CSQ=','').split(',')
     
-    saveFlag1, saveFlagPGx = False, False
+    saveFlag1 = False
     
     for j in range(0,len(iText)):
         jText = iText[j].split('|')
@@ -257,18 +224,10 @@ while tLine:
                         and float(jText[col_map['am_pathogenicity']])>user_am_pathogenicity))
             if predicted_impact:
                 saveFlag1 = "Keep"
-        
-        # 2) judge PGx
-        if ivariation4 in haplotype_var:
-            saveFlagPGx = "Pharma_var"    
-        elif any(part in haplotype_rsID for part in jText[colNames_CSQ.index('Existing_variation')].split('&')):
-            saveFlagPGx = "Pharma_var" 
 
     # after for j in range(len(iText)) loop, if saveFlag1/2/3/4/5 has value, append the line to respective report
     if saveFlag1:
         reportA.append(tLine)
-    if saveFlagPGx:
-        reportpgx.append(tLine)
 
 
     # print progress every 1000000 lines
@@ -389,92 +348,9 @@ expanded_reportA = expanded_reportA[expanded_reportA['acmg_classification'].isin
 expanded_reportA = expanded_reportA.drop_duplicates()
 
 
-
-#%% Cell 6 Output python managed file and extract unique genes ======================================
+#%% Cell 4 Output python managed file and extract unique genes ======================================
 print("\nPython output Statistic")
 print(f"Original rows: {total_row}")
 print(f"Filtered and output rows: {len(expanded_reportA)}")
 
 expanded_reportA.to_csv(cfg["output_file"], sep="\t", index=False, quoting=3)
-
-#%% Cell 7 for pharmaco-annotation
-# for each kid 
-expanded_reportPGx = []
-for i, vcf_line in enumerate(reportpgx):
-    expanded_rows = process_vcf_line_to_expanded_format(vcf_line, col_map, csq_columns)
-    expanded_reportPGx.extend(expanded_rows)
-if expanded_reportPGx:
-    expanded_reportPGx = pd.DataFrame(expanded_reportPGx, columns=all_output_columns)
-
-expanded_reportPGx['rsID'] = expanded_reportPGx['Existing_variation'].str.extract(r'(rs\d+)', expand=False)
-expanded_reportPGx['variant_info'] = expanded_reportPGx[['#CHROM', 'POS', 'REF', 'ALT']].fillna('').astype(str).agg('_'.join, axis=1)
-
-def extract_gt(val):
-    if isinstance(val, str):
-        return val.split(":")[0]
-    return None
-
-for kid in meta['Sample']:
-    print(f'Now processing PGx for {kid}')
-    expanded_reportPGx_tmp = expanded_reportPGx[[kid, "rsID","variant_info",'#CHROM', 'POS', 'REF', 'ALT']].drop_duplicates()
-    expanded_reportPGx_tmp["Genotype_num"] = expanded_reportPGx_tmp[kid].apply(extract_gt)
-    expanded_reportPGx_tmp = expanded_reportPGx_tmp[expanded_reportPGx_tmp["Genotype_num"] != "./."]
-
-    Pharma_db_tmp = Pharma_db.copy()
-
-    def get_allele_string(row):
-        gt = row['Genotype_num']
-        ref = row['REF']
-        alt = row['ALT']
-
-        if len(alt) < len(ref):
-            alt = 'del'
-
-        if gt in ['0/1', '1/0', "0|1", "1|0"]:
-            alleles = sorted([ref, alt])  # ref + alt
-        elif gt in ['1/1','1|1']:
-            alleles = sorted([alt, alt])  # alt + alt
-        elif gt in ['0/0','0|0']:
-            alleles = sorted([ref, ref]) 
-        else:
-            return "NA"
-        return ''.join(alleles)
-    
-    expanded_reportPGx_tmp['Genotype'] = False
-    expanded_reportPGx_tmp['Genotype'] = expanded_reportPGx_tmp.apply(get_allele_string, axis=1)
-    expanded_reportPGx_tmp["merge_key"] = expanded_reportPGx_tmp["rsID"] + "_" + expanded_reportPGx_tmp["Genotype"]
-
-    for idx, row in Pharma_db_tmp.iterrows():
-        rsid = row["rsID"]
-        allele = row["Genotype.Allele"]
-
-        if isinstance(allele, str) and not allele.startswith("*"):
-            # Exact match rsID + allele
-            key = f"{rsid}_{allele}"
-            match = expanded_reportPGx_tmp[expanded_reportPGx_tmp["merge_key"] == key]
-        else:
-            # Only match rsID
-            match = expanded_reportPGx_tmp[expanded_reportPGx_tmp["rsID"] == rsid]
-
-        if not match.empty:
-            Pharma_db_tmp.at[idx, "Genotype"] = match.iloc[0]["Genotype"]
-        else:
-            Pharma_db_tmp.at[idx, "Genotype"] = 'a'
-
-
-    def filter_genotypes(group):
-        if 'Genotype_Allele' in group.columns:
-            if group['Genotype_Allele'].str.startswith('*').any():
-                return not (group['Genotype'] == 'a').any()
-            else:
-                return (group['Genotype_Allele'] == group['Genotype']).all()
-        else:
-            return not (group['Genotype'] == 'a').any()
-        
-    Pharma_db_final = Pharma_db_tmp.groupby('Variant.Haplotypes').filter(filter_genotypes)     
-    
-    pgx_dir_name = os.path.dirname(cfg['output_file']) 
-    pgx_subdir = os.path.join(pgx_dir_name, 'PGx') 
-    os.makedirs(pgx_subdir, exist_ok=True) 
-    pgx_filename = os.path.join(pgx_dir_name, 'PGx/' + f'{kid}_PGx.txt')
-    Pharma_db_final.to_csv(pgx_filename, index=False,sep='\t')
