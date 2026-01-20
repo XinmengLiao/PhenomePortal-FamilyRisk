@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # scripts for steamline the whole pipeline
-SCRIPTS='/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts'
+SCRIPTS='/mnt/nas/Genomics/Genome/NewbornRisk/Scripts'
+
+# Exit immediately if any command fails
+set -e
+
 
 # Function to display usage
 usage() {
@@ -12,27 +16,25 @@ OPTIONS:
     -i, --input-sample SAMPLE       Input sample name (required)
     -o, --output-directory DIR      Output directory path (required)
     -v, --vcf FILE                  Path for input VCF file (required)
-    --sample-metadata               Metadata containing all Sample IDs (required)
-                                    Format: [sampleID\tSex], Sex should be 1 for 'Male' and 2 for 'Female', or blank
-                                    i.e. P001_01    2 
+    --ped                           Ped file containing family relationships (required)
     --genome						Reference genome, default is GRCH38
     								Options: GRCH37, GRCH38
     --only-pass                    	Only keep the PASS variant in vcf file. Default is yes. 
     								Options: yes, no. 
     --genedb                        The reference gene-disease list (required)
-                                    Options: TR, babyseq, babydetect, babyscreen, guardian, earlycheck, ACMG
-    --customized-genedb             User customized gene-disease list in .txt or .tsv format
-    
-    For PRS analysis (optional):
+                                    Options: TR, babyseq, babydetect, babyscreen, guardian, earlycheck, ACMG, or user customized list
+    --customized-genedb             The user customized gene-disease list file path
+
+    PGS parameters
     --pgsid						    A comma separated list of PGS score IDs, e.g. PGS000802
     --pgpid						    A comma separated list of PGS Catalog publications, e.g. PGP000001
     --efoid						    A comma separated list of PGS Catalog EFO traits, e.g. EFO_0004214
-    --run-prs                       Whether to run PRS analysis, default is no.
+    --run-prs                       Whether to run PRS analysis, default is no. 
                                     Options: yes, no.
     --run-imputation                Whether to run imputation step, default is no. Yes is recommended for vcf files without 0/0 genotypes for PRS analysis.
                                     Options: yes, no.
     
-    For filtering variants: 
+    Variants Filteration Parameters
     --af-clinvar                    User defined allele frequency threshold for ClinVar variants, default is 1
     --af-precition                  User defined allele frequency threshold for predicted variants, default is 0.05
     --ada                           User defined ada threshold, default is 0.6
@@ -50,10 +52,11 @@ OPTIONS:
                                     default is Pathogenic, Likely_pathogenic, Uncertain_significance, Conflicting_classifications_of_pathogenicity
     --acmg-classification           User defined revel threshold, 
                                     default is Pathogenic, Likely_pathogenic, Uncertain_significance, Benign, Likely_benign
-
-    -h, --help                      Display this help message
+    
+    Running Parameters
     --fork                          Threads for VEP, default is 20
     -t, --threads  THREADS          Threads for bcftools, default is 20 
+    -h, --help                      Display this help message
 
 
 REQUIRED ARGUMENTS:
@@ -67,11 +70,11 @@ EOF
 INPUT_SAMPLE=""
 OUTPUT_DIR=""
 VCF_FILE=""
+PED=""
 GENOME="GRCH38"
 ONLY_PASS="yes"
 GENEDB=""
 CUSTOMIZED_GENEDB=""
-METADATA=""
 FORK=""
 THREADS=""
 
@@ -115,26 +118,26 @@ while [[ $# -gt 0 ]]; do
             VCF_FILE="$2"
             shift 2
             ;;
+        --ped)
+            PED="$2"
+            shift 2
+            ;;
         --genome)
             GENOME="$2"
-            shift 2
-            ;;
-        --genedb)
-            GENEDB="$2"
-            shift 2
-            ;;
-        --customized-genedb)
-            CUSTOMIZED_GENEDB="$2"
-            shift 2
-            ;;
-        --sample-metadata)
-            METADATA="$2"
             shift 2
             ;;
         --only-pass)
             ONLY_PASS="$2"
             shift 2
-            ;;            
+            ;;   
+        --genedb)
+            GENEDB="$2"
+            shift 2
+            ;;  
+        --customized-genedb)
+            CUSTOMIZED_GENEDB="$2"
+            shift 2
+            ;;         
         --run-prs)
             RUNPRS="$2"
             shift 2
@@ -254,6 +257,14 @@ if [[ -z "$OUTPUT_DIR" ]]; then
     exit 1
 fi
 
+if [[ -z "$PED" ]]; then
+    echo "Error: --ped is required"
+    usage
+    exit 1
+fi
+
+
+
 # Validate VCF file exists
 if [[ ! -f "$VCF_FILE" ]]; then
     echo "Error: VCF file does not exist: $VCF_FILE"
@@ -270,7 +281,8 @@ echo "Reference Genome: $GENOME"
 echo "Pass only: $ONLY_PASS"
 echo "Gene-Disease Database: $GENEDB"
 echo "Customized Gene-Disease Database: $CUSTOMIZED_GENEDB"
-echo "File containing all sample IDs: $METADATA"
+echo "VEP fork: $FORK"
+echo "Bcftools threads: $THREADS"
 
 echo "=== PRS Parameters ==="
 echo "Run PRS analysis: $RUNPRS"
@@ -278,10 +290,6 @@ echo "Run Imputation: $RUNIMPUTATION"
 echo "PGS IDs: $PGSID"
 echo "PGS Publications: $PGPID"
 echo "PGS EFO Traits: $EFOID"
-
-echo "=== Usages ==="
-echo "VEP fork: $FORK"
-echo "Bcftools threads: $THREADS"
 
 echo "=== Threshold Parameters ==="
 echo "AF ClinVar: $AF_CLINVAR"
@@ -303,7 +311,7 @@ echo "======================================"
 
 mkdir -p $OUTPUT_DIR/Results
 
-# File names definiation
+## File names definiation
 INPUT_VCF_RMMISSINGALT="${INPUT_SAMPLE}_rmmissingalt.vcf.gz"
 INPUT_VCF_BIALLELIC="${INPUT_SAMPLE}_biallelic.vcf.gz"
 INPUT_VCF_BIALLELIC_NODUP="${INPUT_SAMPLE}_biallelic_nodup.vcf.gz"
@@ -342,10 +350,10 @@ conda run -n vep bash $SCRIPTS/vep.sh \
 ### Step 4: Python (Except GeneBe can not be run due to the too permerssive)
 echo "5. $(date): Running Python for VEP result management..."
 
-conda run -n vep python "$SCRIPTS/batch.py" \
+conda run -n vep python "$SCRIPTS/family.py" \
     "$OUTPUT_DIR/${INPUT_VCF_ANNOTATED}" \
     "$OUTPUT_DIR/${INPUT_SAMPLE}.txt" \
-    "$METADATA" \
+    "$PED" \
     "$AF_CLINVAR" \
     "$AF_PRECITION" \
     "$ADA" "$RF" \
@@ -364,24 +372,17 @@ conda run -n vep python "$SCRIPTS/batch.py" \
     "$CUSTOMIZED_GENEDB"
 
 ### Step 5: R for pedigree plot 
-echo "6. Running R for creating pedigree plot"
-mkdir -p $OUTPUT_DIR/Results/Figures
-conda run -n varxomics Rscript $SCRIPTS/Batch_Analysis.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $METADATA $OUTPUT_DIR $GENEDB 
+echo "6. Running R for managing data and creating pedigree plot. "
+conda run -n varxomics Rscript $SCRIPTS/Newborn_Family20251203.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $PED $OUTPUT_DIR
+conda run -n varxomics2 Rscript $SCRIPTS/PGS_DensityPlot20251203.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $PED $OUTPUT_DIR
 
-# Not using this R script for newborn screening anymore in the latest version. 
-# # for biomRt package, the monogenic positive combined bar plot 
-# conda run -n varxomics2 Rscript $SCRIPTS/Batch_Analysis2.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $METADATA $OUTPUT_DIR $GENEDB 
+### Step 6: PGx by PharmCat
+pharmcat="/mnt/nas/Genomics/Genome/NewbornRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
+pharmcat_preprocessor="/mnt/nas/Genomics/Genome/NewbornRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
+preprocessor_ref="/mnt/nas/Genomics/Genome/NewbornRisk/tools/pharmcat/reference.fna.bgz"
+preprocessor_position="/mnt/nas/Genomics/Genome/NewbornRisk/tools/pharmcat/pharmcat_positions_3.1.1.vcf.bgz"
 
-mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
-
-### Step 5: PGx by PharmCat
-pharmcat="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
-pharmcat_preprocessor="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
-preprocessor_ref="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/reference.fna.bgz"
-preprocessor_position="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat_positions_3.1.1.vcf.bgz"
-
-PHARMCAT_PREPROCESSED_VCF="${OUTPUT_DIR}/${INPUT_SAMPLE}_biallelic_nodup_pass.preprocessed.vcf.bgz"
-echo $PHARMCAT_PREPROCESSED_VCF
+PHARMCAT_PREPROCESSED_VCF="${INPUT_SAMPLE}_biallelic_nodup_pass.preprocessed.vcf.bgz"
 
 mkdir -p ${OUTPUT_DIR}/PGx
 
@@ -393,58 +394,25 @@ conda run -n vep114 $pharmcat_preprocessor \
 
 # pharmcat step A  
 java -jar $pharmcat \
-    -matcher -vcf "$PHARMCAT_PREPROCESSED_VCF" \
-    -phenotyper -o "${OUTPUT_DIR}/PGx/" \
+    -matcher -vcf $PHARMCAT_PREPROCESSED_VCF \
+    -phenotyper -o ${OUTPUT_DIR}/PGx/ \
     -research cyp2d6 -v
 
 # pharmcat step B
-java -jar $pharmcat \
-    -reporter -ri ${OUTPUT_DIR}/PGx/*.phenotype.json \
-    -o "${OUTPUT_DIR}/PGx/" -reporterJson -reporterHtml -v
+for json in ${OUTPUT_DIR}/PGx/*.phenotype.json; do
+    java -jar $pharmcat \
+        -reporter -ri $json \
+        -o ${OUTPUT_DIR}/PGx/ -reporterJson -reporterHtml
+done
 
-# Move final reports to the Results folder 
-mv ${OUTPUT_DIR}/PGx/*.report.* ${OUTPUT_DIR}/Results/PGx_Reports/
-
-# Remove intermediate files
-rm "$PHARMCAT_PREPROCESSED_VCF"*
-rm .*.missing_pgx_var.vcf
-
-
-### Step 6: Run PRS analysis if required
-if [[ "$RUNPRS" == "yes" ]]; then
-    
-    if [[ "$RUNIMPUTATION" != "yes" || "$RUNIMPUTATION" != "no" ]]; then
-        echo "Error: --run-imputation must be set to 'yes' or 'no' when --run-prs is 'yes'"
-        exit 1
-    fi
-    
-    echo "7. Running PRS analysis for $INPUT_SAMPLE"
-    conda run -n pgsc bash $(dirname $SCRIPTS)/NewbornRisk_PRS_Batch.sh \
-        -i $INPUT_SAMPLE \
-        -o $OUTPUT_DIR/PRS \
-        -v ${INPUT_VCF_BIALLELIC_NODUP} \
-        --metadata $METADATA \
-        --genome $GENOME \
-        --only-pass $ONLY_PASS \
-        --run-imputation $RUNIMPUTATION \
-## adjust the PRS options
-        -t $THREADS
-fi
-
-
-### Step 6: Run PRS analysis if required
+### Step 7: Run PRS analysis if required
 if [[ "$RUNPRS" == "yes" ]]; then
     
     if [[ -z "$RUNIMPUTATION" ]]; then
         echo "Error: --run-imputation must be set when --run-prs is 'yes'"
         exit 1
     fi
-
-    if [[ -z "$GENDER" ]]; then
-        echo "Error: --gender is required for PRS analysis"
-        exit 1
-    fi
-
+    
     echo "7. Running PRS analysis for $INPUT_SAMPLE"
 
     # make PRS psam file 
@@ -454,21 +422,16 @@ if [[ "$RUNPRS" == "yes" ]]; then
     # extract individual ID (column 2) and sex (column 5) for the given sample
     awk '{print $2"\t"$5}' $PED >> $PSAM
 
-    sampleID=$(gzip -dc "$VCF_FILE" | grep -E '^##|^#CHROM' | tail -n 1 | awk '{print $NF}')
-
-    printf "$sampleID\t$pgs_gender\n" >> $PSAM
-    cat $PSAM
-
     mkdir -p $OUTPUT_DIR/PRS
 
-    echo "Now running PGS score for: $INPUT_VCF_BIALLELIC_NODUP_PASS"
+    echo $INPUT_VCF_BIALLELIC_NODUP
 
     if [[ -n "$PGSID" ]]; then
     echo "Use PGSID: $PGSID. "
-    conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
+    conda run -n pgsc bash $(dirname $SCRIPTS)/NewbornRisk_PRS_Batch.sh \
         -i $INPUT_SAMPLE \
         -o $OUTPUT_DIR/PRS \
-        -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
+        -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
         --metadata $PSAM \
         --genome $GENOME \
         --only-pass no \
@@ -478,7 +441,7 @@ if [[ "$RUNPRS" == "yes" ]]; then
 
     elif [[ -n "$PGPID" ]]; then
         echo "Use PGPID: $PGPID. "
-        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
+        conda run -n pgsc bash $(dirname $SCRIPTS)/NewbornRisk_PRS_Batch.sh \
             -i $INPUT_SAMPLE \
             -o $OUTPUT_DIR/PRS \
             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
@@ -491,7 +454,7 @@ if [[ "$RUNPRS" == "yes" ]]; then
 
     elif [[ -n "$EFOID" ]]; then
         echo "Use EFOID: $EFOID. "
-        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
+        conda run -n pgsc bash $(dirname $SCRIPTS)/NewbornRisk_PRS_Batch.sh \
             -i $INPUT_SAMPLE \
             -o $OUTPUT_DIR/PRS \
             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
@@ -503,8 +466,5 @@ if [[ "$RUNPRS" == "yes" ]]; then
             -t $THREADS || { echo "PRS analysis failed"; exit 1; }
 
     fi
-
-    # move Reports to the Results folder
-    mv $OUTPUT_DIR/PRS/results/$INPUT_SAMPLE/score/ $OUTPUT_DIR/Results/PGS_Scores
 
 fi
