@@ -422,7 +422,7 @@ java -jar $pharmcat \
 
 # pharmcat step B
 java -jar $pharmcat \
-    -reporter -ri ${OUTPUT_DIR}/PGx/*.report.*.phenotype.json \
+    -reporter -ri ${OUTPUT_DIR}/PGx/*.phenotype.json \
     -o "${OUTPUT_DIR}/PGx/" -reporterJson -reporterHtml -v
 
 # Move final reports to the Results folder 
