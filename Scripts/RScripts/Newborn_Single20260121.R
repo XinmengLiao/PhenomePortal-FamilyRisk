@@ -22,6 +22,12 @@ gender <- args[3]
 output_dir <- args[4]
 genelist <- args[5]
 
+sampleID <- "NW_001_C"
+result_file <- "/Users/xinmengliao/Desktop/rwgs1_kid.txt"
+gender <- "Female"
+output_dir <- '/Users/xinmengliao/Desktop/'
+genelist <- ""
+
 if (location == "local"){
   compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
   TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/TRpipelineRemovedVariants.txt'
@@ -142,6 +148,8 @@ if("NBScreening" %in% genelist){
   result_carrier <- result1 %>% 
     filter(Genes != "MEFV" & HGVSp != "p.Met694Val") %>% 
     filter(Genes != "MEFV" & HGVSp != "p.Met680Ile")
+}else{
+  result_carrier <- result1
 }
 carrier.status <- carrier.plp(result_carrier)
 

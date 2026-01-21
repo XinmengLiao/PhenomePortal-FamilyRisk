@@ -46,7 +46,7 @@ config = {
         "output_file": sys.argv[2],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list.txt',
+        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list20251125.txt',
         'function_type': sys.argv[21]
     },
     "sysmed": {
@@ -54,7 +54,7 @@ config = {
         "output_file": sys.argv[2],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list.txt',
+        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list20251125.txt',
         'function_type': sys.argv[21]
     }
 }
