@@ -22,12 +22,6 @@ gender <- args[3]
 output_dir <- args[4]
 genelist <- args[5]
 
-sampleID <- "NW_001_C"
-result_file <- "/Users/xinmengliao/Desktop/rwgs1_kid.txt"
-gender <- "Female"
-output_dir <- '/Users/xinmengliao/Desktop/'
-genelist <- ""
-
 if (location == "local"){
   compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
   TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/TRpipelineRemovedVariants.txt'

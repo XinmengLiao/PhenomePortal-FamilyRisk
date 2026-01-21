@@ -93,6 +93,7 @@ user_am_pathogenicity = float(user_am_pathogenicity)
 user_clinvar= sys.argv[17].split(",")
 user_acmg_classification = sys.argv[18].split(",")
 user_function_type = sys.argv[21]  # newborn or carrier
+user_only_clinvar = sys.argv[22]  # yes or no
 
 # ====== 3) Reading necessary files ======
 
@@ -429,6 +430,10 @@ expanded_reportA = expanded_reportA.drop_duplicates()
 
 
 #%% Cell 4 Output python managed file and extract unique genes ======================================
+
+if user_only_clinvar:
+    expanded_reportA = expanded_reportA[expanded_reportA["ClinVar_CLNSIG"] != "" and expanded_reportA["ClinVar_CLNSIG"].notna()]
+
 print("\nPython output Statistic")
 print(f"Original rows: {total_row}")
 print(f"Filtered and output rows: {len(expanded_reportA)}")
