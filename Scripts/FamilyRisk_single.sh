@@ -429,8 +429,9 @@ java -jar $pharmcat \
 mv ${OUTPUT_DIR}/PGx/*.report.* ${OUTPUT_DIR}/Results/PGx_Reports/
 
 # Remove intermediate files
-rm "$PHARMCAT_PREPROCESSED_VCF"*
-rm .*.missing_pgx_var.vcf
+rm -f "${PHARMCAT_PREPROCESSED_VCF}"*
+rm -f "${OUTPUT_DIR}/PGx"/*missing_pgx_var.vcf
+rm -f "${OUTPUT_DIR}"/*missing_pgx_var.vcf
 
 ### Step 6: Run PRS analysis if required
 if [[ "$RUNPRS" == "yes" ]]; then
