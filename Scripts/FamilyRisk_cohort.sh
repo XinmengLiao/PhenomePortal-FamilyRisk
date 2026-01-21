@@ -23,7 +23,9 @@ OPTIONS:
                                     Options: TR, babyseq, babydetect, babyscreen, guardian, earlycheck, ACMG
     --customized-genedb             User customized gene-disease list in .txt or .tsv format
     
-    For PRS analysis (optional):
+    For PGx and PRS analysis (optional):
+    --run-pgx                       Run PGx analysis or not (optional), default is no
+                                    Options: yes, no
     --pgsid						    A comma separated list of PGS score IDs, e.g. PGS000802
     --pgpid						    A comma separated list of PGS Catalog publications, e.g. PGP000001
     --efoid						    A comma separated list of PGS Catalog EFO traits, e.g. EFO_0004214
@@ -84,6 +86,9 @@ PGSID=""
 PGPID=""
 EFOID=""
 
+# PGx parameters
+RUNPGX="no"
+
 # Default thresholds
 ONLY_CLINVAR="no"
 AF_CLINVAR="1"
@@ -142,6 +147,10 @@ while [[ $# -gt 0 ]]; do
             ONLY_CLINVAR="$2"
             shift 2
             ;;       
+        --run-pgx)
+            RUNPGX="$2"
+            shift 2
+            ;;
         --run-prs)
             RUNPRS="$2"
             shift 2
@@ -279,12 +288,13 @@ echo "Gene-Disease Database: $GENEDB"
 echo "Customized Gene-Disease Database: $CUSTOMIZED_GENEDB"
 echo "File containing all sample IDs: $METADATA"
 
-echo "=== PRS Parameters ==="
+echo "=== PRS and PGx Parameters ==="
 echo "Run PRS analysis: $RUNPRS"
 echo "Run Imputation: $RUNIMPUTATION"
 echo "PGS IDs: $PGSID"
 echo "PGS Publications: $PGPID"
 echo "PGS EFO Traits: $EFOID"
+echo "Run PGx analysis: $RUNPGX"
 
 echo "=== Usages ==="
 echo "VEP fork: $FORK"
@@ -380,42 +390,47 @@ INPUT_VCF_ANNOTATED="${INPUT_SAMPLE}_vep_annotated.vcf.gz"
 # mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
 
 ### Step 6: PGx by PharmCat
-pharmcat="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
-pharmcat_preprocessor="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
-preprocessor_ref="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/reference.fna.bgz"
-preprocessor_position="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat_positions_3.1.1.vcf.bgz"
+if [[ "$RUNPGX" == "no" ]]; then
+    echo "Skipping PGx analysis as --run-pgx is not set to 'yes'."
+    exit 0
+else
+    pharmcat="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
+    pharmcat_preprocessor="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
+    preprocessor_ref="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/reference.fna.bgz"
+    preprocessor_position="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat_positions_3.1.1.vcf.bgz"
 
-PHARMCAT_PREPROCESSED_VCF="${OUTPUT_DIR}/${INPUT_SAMPLE}_biallelic_nodup_pass.preprocessed.vcf.bgz"
-echo $PHARMCAT_PREPROCESSED_VCF
+    PHARMCAT_PREPROCESSED_VCF="${OUTPUT_DIR}/${INPUT_SAMPLE}_biallelic_nodup_pass.preprocessed.vcf.bgz"
+    echo $PHARMCAT_PREPROCESSED_VCF
 
-mkdir -p ${OUTPUT_DIR}/PGx
-mkdir -p ${OUTPUT_DIR}/Results/PGx_Reports
+    mkdir -p ${OUTPUT_DIR}/PGx
+    mkdir -p ${OUTPUT_DIR}/Results/PGx_Reports
 
-# # normalized by pharmcat preprocessor
-# conda run -n vep114 $pharmcat_preprocessor \
-#     -vcf $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
-#     -refFna $preprocessor_ref \
-#     -refVcf $preprocessor_position
+    # normalized by pharmcat preprocessor
+    conda run -n vep114 $pharmcat_preprocessor \
+        -vcf $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
+        -refFna $preprocessor_ref \
+        -refVcf $preprocessor_position
 
-# # pharmcat step A  
-# java -jar $pharmcat \
-#     -matcher -vcf "$PHARMCAT_PREPROCESSED_VCF" \
-#     -phenotyper -o "${OUTPUT_DIR}/PGx/" \
-#     -research cyp2d6 -v
-
-# pharmcat step B
-for file in ${OUTPUT_DIR}/PGx/*.phenotype.json; do
-    echo $file
+    # pharmcat step A  
     java -jar $pharmcat \
-        -reporter -ri $file \
-        -o "${OUTPUT_DIR}/Results/PGx_Reports" -reporterJson -reporterHtml -v
-done
+        -matcher -vcf "$PHARMCAT_PREPROCESSED_VCF" \
+        -phenotyper -o "${OUTPUT_DIR}/PGx/" \
+        -research cyp2d6 -v
 
-# # Remove intermediate files
-# rm -f "${PHARMCAT_PREPROCESSED_VCF}"*
-# rm -f "${OUTPUT_DIR}/PGx"/*missing_pgx_var.vcf
-# rm -f "${OUTPUT_DIR}"/*missing_pgx_var.vcf
+    # pharmcat step B
+    for file in ${OUTPUT_DIR}/PGx/*.phenotype.json; do
+        echo $file
+        java -jar $pharmcat \
+            -reporter -ri $file \
+            -o "${OUTPUT_DIR}/Results/PGx_Reports" -reporterJson -reporterHtml -v
+    done
 
+    # Remove intermediate files
+    rm -f "${PHARMCAT_PREPROCESSED_VCF}"*
+    rm -f "${OUTPUT_DIR}/PGx"/*missing_pgx_var.vcf
+    rm -f "${OUTPUT_DIR}"/*missing_pgx_var.vcf
+
+fi
 
 # ### Step 7: Run PRS analysis if required
 # if [[ "$RUNPRS" == "yes" ]]; then
