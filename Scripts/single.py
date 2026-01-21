@@ -432,7 +432,7 @@ expanded_reportA = expanded_reportA.drop_duplicates()
 #%% Cell 4 Output python managed file and extract unique genes ======================================
 
 if user_only_clinvar:
-    expanded_reportA = expanded_reportA[expanded_reportA["ClinVar_CLNSIG"] != "" and expanded_reportA["ClinVar_CLNSIG"].notna()]
+    expanded_reportA = expanded_reportA[(expanded_reportA["ClinVar_CLNSIG"] != "") & (expanded_reportA["ClinVar_CLNSIG"].notna())]
 
 print("\nPython output Statistic")
 print(f"Original rows: {total_row}")

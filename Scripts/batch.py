@@ -15,7 +15,23 @@ import pickle
 from collections import defaultdict
 from pathlib import Path
 
+# Setup logging to file
+log_file = os.path.join(os.path.dirname(sys.argv[2]), "batch_debug.log")
+with open(log_file, 'w') as f:
+    f.write(f"[{datetime.now()}] batch.py started\n")
+    f.flush()
+
+def log_msg(msg):
+    """Log message to both stdout and file"""
+    print(msg, flush=True)
+    with open(log_file, 'a') as f:
+        f.write(f"[{datetime.now()}] {msg}\n")
+        f.flush()
+
+log_msg("Imports completed")
+
 all_start_time = time.time()
+sys.stdout.flush()
 # ====== 1) setting up paths and running parameters ======
 path = 'sysmed'  # local or sysmed
 
@@ -46,7 +62,7 @@ config = {
         "meta_file": sys.argv[3],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list.txt'
+        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list20251125.txt'
     },
     "sysmed": {
         "fileName": sys.argv[1],
@@ -54,7 +70,7 @@ config = {
         "meta_file": sys.argv[3],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list.txt'   
+        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list20251125.txt'   
     }
 }
 
@@ -90,6 +106,7 @@ user_am_pathogenicity = sys.argv[16]
 user_am_pathogenicity = float(user_am_pathogenicity)
 user_clinvar= sys.argv[17].split(",")
 user_acmg_classification = sys.argv[18].split(",")
+user_clinvar_only = sys.argv[21]
 
 # ====== 3) Reading necessary files ======
 
@@ -103,15 +120,15 @@ def read_db_file(filepath, encoding="ISO-8859-1", sep="\t", fillna_str="No info"
 
 # GeneDB list
 if cfg["genedb_file"] != "" and cfg["customized_genedb_file"] == "":
-    print("Useing predefined genedb option.")
+    log_msg("Useing predefined genedb option.")
     project_list = cfg["genedb_file"].split(',')
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
     genedb = genedb[genedb['Project'].isin(project_list)]
 elif cfg["customized_genedb_file"] != "" and cfg["genedb_file"] == "":
-    print("Using customized genedb file.")
+    log_msg("Using customized genedb file.")
     genedb = pd.read_csv(cfg["customized_genedb_file"], sep="\t")
 elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "":
-    print("Using default Newborn Screening List.")
+    log_msg("Using default Newborn Screening List.")
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
     genedb = genedb[genedb['Project'].isin(['NBScreening'])]
 else:
@@ -161,7 +178,7 @@ while tLine:
             col_map = { name: idx for idx, name in enumerate(colNames_CSQ) }
         elif tLine.startswith('#CHROM'):
             headings = iContent
-            print(headings)
+            print(headings,flush=True)
         # directly goes into next line
         tLine = file.readline()
         #print(tLine)
@@ -232,7 +249,7 @@ while tLine:
 
     # print progress every 1000000 lines
     if i % 1000000 == 0:
-        print(f"{i} lines processed!")
+        log_msg(f"{i} lines processed!")
 
     # read the next line
     tLine = file.readline()
@@ -240,9 +257,9 @@ while tLine:
 
 file.close()
 total_row = i
-print('Cell 2 VEP annotated File processing done! Now start to map GeneDB and DiseaseDB')
+log_msg('Cell 2 VEP annotated File processing done! Now start to map GeneDB and DiseaseDB')
 end_time = time.time()
-print("Total processing time: {:.2f} seconds".format(end_time - start_time))
+log_msg("Total processing time: {:.2f} seconds".format(end_time - start_time))
 
 # Manage text file into a dataframe
 base_vcf_columns = headings
@@ -314,11 +331,15 @@ try:
         genome='hg38',
         use_ensembl=False,
         use_refseq=True,
-        flatten_consequences=True,
+        username="xinmeng.liao@scilifelab.se",
+        api_key="ak-NUOZZHfs8siGFMDlXyfqgbFNP8HJHt64",
+        use_netrc=False,
+        endpoint_url='https://api.genebe.net/cloud/api-public/v1/variants',
+        flatten_consequences=False,
         output_format="dataframe"
     )
 except Exception as e:
-    print(f"GeneBe annotation failed: {str(e)}")
+    log_msg(f"GeneBe annotation failed: {str(e)}")
     # create an empty DataFrame to keep the structure
     annotated_df = pd.DataFrame(columns=[
         'chr', 'pos', 'ref', 'alt', 'gene_symbol', 
@@ -349,8 +370,11 @@ expanded_reportA = expanded_reportA.drop_duplicates()
 
 
 #%% Cell 4 Output python managed file and extract unique genes ======================================
-print("\nPython output Statistic")
-print(f"Original rows: {total_row}")
-print(f"Filtered and output rows: {len(expanded_reportA)}")
+if user_clinvar_only == 'yes':
+    expanded_reportA = expanded_reportA[(expanded_reportA["ClinVar_CLNSIG"] != "") & (expanded_reportA["ClinVar_CLNSIG"].notna())]
+
+log_msg("\nPython output Statistic")
+log_msg(f"Original rows: {total_row}")
+log_msg(f"Filtered and output rows: {len(expanded_reportA)}")
 
 expanded_reportA.to_csv(cfg["output_file"], sep="\t", index=False, quoting=3)
