@@ -406,7 +406,13 @@ conda run -n vep python "$SCRIPTS/single.py" \
     "$FUNCTION_TYPE" \
     "$ONLY_CLINVAR"
 
-### Step 5: PGx by PharmCat
+### Step 5: Run R script for 
+echo "8. Running R script for data management to final results."
+sampleID=$(gzip -dc "$VCF_FILE" | grep -E '^##|^#CHROM' | tail -n 1 | awk '{print $NF}')
+conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Single20251203.R $sampleID $OUTPUT_DIR/${INPUT_SAMPLE}.txt $GENDER $OUTPUT_DIR/Results $GENEDB
+mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
+
+### Step 6: PGx by PharmCat
 pharmcat="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
 pharmcat_preprocessor="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
 preprocessor_ref="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/reference.fna.bgz"
@@ -440,7 +446,7 @@ rm -f "${PHARMCAT_PREPROCESSED_VCF}"*
 rm -f "${OUTPUT_DIR}/PGx"/*missing_pgx_var.vcf
 rm -f "${OUTPUT_DIR}"/*missing_pgx_var.vcf
 
-### Step 6: Run PRS analysis if required
+### Step 7: Run PRS analysis if required
 if [[ "$RUNPRS" == "yes" ]]; then
     
     if [[ -z "$RUNIMPUTATION" ]]; then
@@ -520,8 +526,3 @@ if [[ "$RUNPRS" == "yes" ]]; then
 
 fi
 
-### Step 7: Run R script for 
-echo "8. Running R script for data management to final results."
-sampleID=$(gzip -dc "$VCF_FILE" | grep -E '^##|^#CHROM' | tail -n 1 | awk '{print $NF}')
-conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Single20251203.R $sampleID $OUTPUT_DIR/${INPUT_SAMPLE}.txt $GENDER $OUTPUT_DIR/Results $GENEDB
-mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/

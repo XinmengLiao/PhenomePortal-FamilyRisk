@@ -14,7 +14,8 @@ conflicted::conflicts_prefer(httr::content)
 conflicted::conflicts_prefer(plotly::layout)
 
 ## ---- Define file paths ----
-location = "local" # server or local 
+location = "server" # server or local 
+
 args <- commandArgs(trailingOnly = TRUE)
 sampleID <- args[1]
 result_file <- args[2]
@@ -149,7 +150,7 @@ carrier.status <- carrier.plp(result_carrier)
 
 ## ---- Writing output tables ----
 # Sample and variant summary 
-write.table(general.info, paste0(output_dir, "/general_summary.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(general.info, paste0(output_dir, "/Results/general_summary.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 # scren-positive monogenic disease and carrier status 
 if(nrow(plp.positive) == 0){
@@ -158,6 +159,6 @@ if(nrow(plp.positive) == 0){
 if(nrow(carrier.status) == 0){
   carrier.status <- data.frame(Message = "No positive monogenic disease carrier status variant detected based on the current gene panel and filtering criteria.")
 }
-write.table(plp.positive, paste0(output_dir, "/monogenic_positive_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
-write.table(carrier.status, paste0(output_dir, "/carrier_status_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(plp.positive, paste0(output_dir, "/Results/monogenic_positive_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(carrier.status, paste0(output_dir, "/Results/carrier_status_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 

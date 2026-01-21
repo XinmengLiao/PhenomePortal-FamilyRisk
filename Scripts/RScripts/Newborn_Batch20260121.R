@@ -14,7 +14,7 @@ conflicted::conflicts_prefer(httr::content)
 conflicted::conflicts_prefer(plotly::layout)
 
 ## ---- Define file paths ----
-location = "local" # server or local 
+location = "server" # server or local 
 
 args <- commandArgs(trailingOnly = TRUE)
 sampleID <- args[1]
@@ -46,10 +46,16 @@ if ("NBScreening" %in% genelist){
   result <- result %>% filter(!(variant_info %in% remove.variant$variant_info))
 }
 
-# genedb <- read.csv(genedb_file,header = T,sep = "\t") %>% filter(Project == "NBScreening")
+genedb <- read.csv(genedb_file,header = T,sep = "\t") %>% filter(Project %in% genelist)
+genedb1 <- genedb %>% select(Genes, MIM, Inheritance, Disorder_Group,GenCC_Classification, GenCC_Submitter ) %>% unique()
+result1 <- result %>% 
+  mutate(MIM = as.character(MIM)) %>% 
+  left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
+
 # genedb1 <- genedb %>% select(Genes, MIM, Inheritance, Disorder_Group,GenCC_Classification, GenCC_Submitter ) %>% unique()
-# result <- result %>% left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
-# which(is.na(result$Disorder_Group))
+# result1 <- result %>% 
+#   mutate(MIM = as.character(MIM)) %>% 
+#   left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
 
 gender <- read.csv(gender_file,header = F,sep = "\t") # include sample ID and gender 
 colnames(gender) <- c("Sample","Gender")
@@ -70,8 +76,8 @@ compare_carrier <- read.xlsx(compare_file,sheetName = "All-Carrier") %>% filter(
 ## ---- General Summary Table ----
 total_samplenum <- nrow(gender)
 total_variantnum <- length(unique(result$variant_info))
-total_plp <- result %>% filter(grepl("Pathogenic|Likely_pathogneic",ClinVar_CLNSIG) |
-                                 grepl("Pathogenic|Likely_pathogneic",acmg_classification)) %>% 
+total_plp <- result %>% filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) |
+                                 grepl("Pathogenic|Likely_pathogenic",acmg_classification)) %>% 
   pull(variant_info) %>% unique() %>% length()
 
 ## ---- Functions ----
@@ -147,8 +153,8 @@ genotype.count <- function(data, sampleid, gender = F){
 }
 
 positive.monogenic.plp <- function(data){
-  plp <- data %>% filter(grepl("Pathogenic|Likely_pathogneic",ClinVar_CLNSIG) &
-                           grepl("Pathogenic|Likely_pathogneic",acmg_classification))
+  plp <- data %>% filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) &
+                           grepl("Pathogenic|Likely_pathogenic",acmg_classification))
   
   plp <- genotype.count(plp, sampleid = gender$Sample, gender = gender)
   
@@ -243,8 +249,8 @@ positive.monogenic.plp <- function(data){
 }
 
 carrier.plp <- function(data){
-  carrier <- data %>% filter(grepl("Pathogenic|Likely_pathogneic",ClinVar_CLNSIG) &
-                               grepl("Pathogenic|Likely_pathogneic",acmg_classification)) %>% 
+  carrier <- data %>% filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) &
+                               grepl("Pathogenic|Likely_pathogenic",acmg_classification)) %>% 
     filter(Inheritance %in% c("AR","XLR")) 
   
   carrier <- genotype.count(carrier, sampleid = gender$Sample, gender = gender) %>% 
@@ -395,27 +401,27 @@ inhouse.af <- result %>%
 ## ---- Writing output tables ----
 # Cohort and variant summary 
 general.info = data.frame(
-  Content = c("Total samples", "Filtered variants", "Clinical P/LP variants"),
+  Content = c("Total samples", "Filtered variants", "Clinical P/LP variants (ClinVar or ACMG)"),
   Count = c(total_samplenum, total_variantnum, total_plp)
 )
-write.table(general.info, paste0(output_dir, "/general_summary.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(general.info, paste0(output_dir, "/Results/general_summary.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 # scren-positive monogenic disease and carrier status 
 if(nrow(plp.positive) == 0){
   plp.positive <- data.frame(Message = "No positive monogenic disease variant detected based on the current gene panel and filtering criteria.")
 }
 if(nrow(carrier.status) == 0){
-  plp.positive <- data.frame(Message = "No positive monogenic disease variant detected based on the current gene panel and filtering criteria.")
+  carrier.status <- data.frame(Message = "No positive monogenic disease variant detected based on the current gene panel and filtering criteria.")
 }
-write.table(plp.positive, paste0(output_dir, "/monogenic_positive_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
-write.table(carrier.status, paste0(output_dir, "/carrier_status_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(plp.positive, paste0(output_dir, "/Results/monogenic_positive_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(carrier.status, paste0(output_dir, "/Results/carrier_status_results.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Statistics of positive variant each newborn carry (Barplot)
-write.table(stat.all, paste0(output_dir, "/plp_var_stat.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(stat.all, paste0(output_dir, "/Results/plp_var_stat.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Statistics of disease ontology (Barplot)
-write.table(on.all, paste0(output_dir, "/ontology_stat.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(on.all, paste0(output_dir, "/Results/ontology_stat.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Inhouse allele frequency
-write.table(inhouse.af, paste0(output_dir, "/inhouse_allele_frequency.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(inhouse.af, paste0(output_dir, "/Results/inhouse_allele_frequency.txt"), sep = "\t", row.names = FALSE, quote = FALSE)
 

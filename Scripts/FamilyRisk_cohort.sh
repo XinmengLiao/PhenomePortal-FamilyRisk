@@ -373,14 +373,10 @@ INPUT_VCF_ANNOTATED="${INPUT_SAMPLE}_vep_annotated.vcf.gz"
 #     "$CUSTOMIZED_GENEDB" \
 #     "$ONLY_CLINVAR"
 
-# ### Step 5: R for data management
-# echo "6. Running R for creating managing cohort-level data. "
-# conda run -n varxomics Rscript $SCRIPTS/Batch_Analysis.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $METADATA $OUTPUT_DIR $GENEDB 
 
-# # Not using this R script for newborn screening anymore in the latest version. 
-# # # for biomRt package, the monogenic positive combined bar plot 
-# # conda run -n varxomics2 Rscript $SCRIPTS/Batch_Analysis2.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $METADATA $OUTPUT_DIR $GENEDB 
-
+# ### Step 5: Run R for data management
+# echo "5. Running R for managing PRS data. "
+# conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Batch20260121.R
 # mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
 
 ### Step 6: PGx by PharmCat
@@ -491,4 +487,17 @@ done
 #     # move Reports to the Results folder
 #     mv $OUTPUT_DIR/PRS/results/$INPUT_SAMPLE/score/ $OUTPUT_DIR/Results/PGS_Scores
 
+# fi
+
+
+### Step 8: R for PGS density plot 
+# if [[ "$RUNPRS" == "yes" ]]; then
+#     echo "Running R for PGS density plots."
+#     gunzip -d -k $OUTPUT_DIR/Results/PGS_Scores/*popsimilarity.txt.gz
+#     gunzip -d -k $OUTPUT_DIR/Results/PGS_Scores/*pgs.txt.gz
+#     conda run -n varxomics2 Rscript $SCRIPTS/PGS_DensityPlot20260121.R \
+#         $INPUT_SAMPLE \
+#         $OUTPUT_DIR/Results/PGS_Scores/*pgs.txt.gz \
+#         $OUTPUT_DIR/Results/PGS_Scores/*popsimilarity.txt \
+#         $OUTPUT_DIR population
 # fi
