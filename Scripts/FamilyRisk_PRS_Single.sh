@@ -13,8 +13,8 @@ map_dir38='/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Beagle/plink.GRCh38/no_c
 map_dir37='/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Beagle/plink.GRCh37/no_chr_in_chrom_field'
 ref_dir38='/mnt/nas/Genomics/1KGenome/GRCh38/no_chr_in_chrom_field'
 ref_dir37='/mnt/nas/Genomics/1KGenome/GRCh37-Phase3/no_chr_in_chrom_field'
-remove_chr_file='/mnt/nas/Genomics/Genome/FamilyRisk/Scripts/remove_chrs.txt'
-contig_header='/mnt/nas/Genomics/Genome/FamilyRisk/Scripts/contigs.txt'
+remove_chr_file='/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts/remove_chrs.txt'
+contig_header='/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts/contigs.txt'
 # Function to display usage
 usage() {
     cat << EOF
