@@ -1,8 +1,0 @@
-Var_num	Sample_num	Type
-1	42	Carrier status
-2	16	Carrier status
-3	8	Carrier status
-4	4	Carrier status
-5	3	Carrier status
-1	16	Monogenic Diseases
-2	2	Monogenic Diseases

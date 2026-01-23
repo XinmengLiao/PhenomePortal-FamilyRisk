@@ -1,4 +1,0 @@
-Content	Count
-Total samples	103
-Filtered variants	116
-Clinical P/LP variants	106
