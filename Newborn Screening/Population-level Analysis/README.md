@@ -1,22 +1,14 @@
-### Overview
-NewbornRisk location on server: `/mnt/storage_pool/Genomics/Genome/NewbornRisk`
-1. Script for batch samples analysis: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/NewbornRisk_batch.sh`
-2. Script for manage the VEP annotated VCF: ``
-3. Script for manage the result output from python: `Batch20251203.R`
-4. Example output files: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/newborn103`
-5. Input file for example:
-  - Merged VCF file: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/newborn103/newborn103_merged.vcf.gz`
-  - SampleIDs and Genders: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/newborn103/newborn103gender.txt`
-
 ### Command for anlaysis
 ```bash
-newbornrisk='/mnt/storage_pool/Genomics/Genome/NewbornRisk'
-bash NewbornRisk_batch.sh \
-  -i newborn103 \
-  -v $newbornrisk/examples/P0064/newborn103_merged.vcf.gz \
-  -o $newbornrisk/examples/P0064 \
-  --sample-metadata $newbornrisk/examples/P0064/newborn103gender.txt \
-  --genome GRCH38 --only-pass yes --fork 48 --threads 20 --genedb TR
+bash Scripts/FamilyRisk_cohort.sh \
+	-i newborn103 \
+	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/newborn103_merged.vcf.gz \
+	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort \
+	--sample-metadata /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/newborn103gender.txt \
+	--genome GRCH38 --only-pass yes --genedb NBScreening \
+	--only-clinvar yes --clinvar Pathogenic,Likely_pathognic \
+  	--fork 20 --threads 20 \
+  	--run-prs yes --run-imputation yes --pgsid PGS002760 --run-pgx no
 ```
 
 ## UI Design
@@ -54,7 +46,4 @@ C) Link out to the PGS-Catalog HTML file: `report.html`
 
 ### 6) Statistics of PGx summary. The reports for each individual could be downloaded as compressed file.
 
-<img width="887" height="662" alt="image" src="https://github.com/user-attachments/assets/2c52380a-966a-4a4a-85bc-02607de819f5" />
-<img width="877" height="602" alt="image" src="https://github.com/user-attachments/assets/58499410-8405-4685-876b-8b3198f31d80" />
-<img width="1670" height="493" alt="image" src="https://github.com/user-attachments/assets/8356c5dc-4076-4bdb-bc73-b4a254f78cea" />
-
+### 7) Polygenic risk score
