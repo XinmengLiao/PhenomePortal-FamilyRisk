@@ -1,23 +1,16 @@
-### Overview
-NewbornRisk location on server: `/mnt/storage_pool/Genomics/Genome/NewbornRisk`
-1. Script for family analysis: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/NewbornRisk_family.sh`
-2. Script for manage the annotated variants from VEP: ``
-3. Script for manage the python result: `Pedigree_Analysis20251203.R`
-4. Example output files: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/F4`
-5. Input file for example:
-   - Merged VCF file: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/F4/F4_merged.vcf.gz`
-   - Family information PED file: `/mnt/storage_pool/Genomics/Genome/NewbornRisk/examples/F4/F4.ped`
-  
+## Newborn-Family
 ### Command for analysis
 ```bash
-newbornrisk='/mnt/storage_pool/Genomics/Genome/NewbornRisk'
-bash NewbornRisk_family.sh \
-  -i F4 \
-  -o $newbornrisk/examples/F4 \
-  -v $newbornrisk/examples/F4/F4_merged.vcf.gz \
-  --ped $newbornrisk/examples/F4/F4.ped \
-  --only-pass yes --genome GRCH38 --genedb TR \
-  --fork 20 --threads 20
+Scripts=""
+bash $Scripts/FamilyRisk_family.sh --newborn \
+	-i rwgsF1 \
+	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples/rwgsF1/rwgs_F1.vcf.gz \
+	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-newborn-rwgs1 \
+	--ped /mnt/nas/Genomics/Genome/FamilyRisk/examples/rwgsF1/rwgs_F1.ped \
+	--genome GRCH38 --only-pass yes \
+	--customized-genedb /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/carrier_rwgs1_customized_genelist.txt \
+  	--fork 20 --threads 20 \
+  	--run-prs yes --run-imputation yes --pgsid PGS002248 --run-pgx yes
 ```
 
 ### UI design
@@ -36,7 +29,7 @@ It will be nice if the following contents could be included in the webpage:
 #### 2) Screen-positive rare diseases and carrier status
 1. Table of screen-positive rare disease: `carrier_status_results.txt`
 2. Table of carrier status: `monogenic_positive_results.txt`
-* Note: Only diseases caused by ClinVar or ACMG P/LP variants will be shown as default. 
+* Note: Only diseases caused by ClinVar **AND** ACMG P/LP variants will be shown as default. 
 
 #### 3) Pedigree plots for the variants of screen-positive diseases.
 The plot will be automatical generated: `F1_IDH3A_c.802G>A_pedigree_plot.png`
