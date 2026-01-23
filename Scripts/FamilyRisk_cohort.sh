@@ -328,66 +328,66 @@ INPUT_VCF_BIALLELIC_NODUP="${INPUT_SAMPLE}_biallelic_nodup.vcf.gz"
 INPUT_VCF_BIALLELIC_NODUP_PASS="${INPUT_SAMPLE}_biallelic_nodup_pass.vcf.gz"
 INPUT_VCF_ANNOTATED="${INPUT_SAMPLE}_vep_annotated.vcf.gz"
 
-# ### Step 1: Clean up the raw file 
-# echo '1. Remove missing ALT for input vcf. '
-# conda run -n vep bcftools view -e 'ALT = "."' $VCF_FILE -Oz -o $OUTPUT_DIR/${INPUT_VCF_RMMISSINGALT} --threads $THREADS
-# echo '2. Split into biallelic.'
-# conda run -n vep bcftools norm -m -both -Oz -o $OUTPUT_DIR/${INPUT_VCF_BIALLELIC} $OUTPUT_DIR/${INPUT_VCF_RMMISSINGALT} --threads $THREADS
-# echo '3. Remove the duplicated variant'
-# conda run -n vep bcftools norm -d exact -Oz -o $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC} --threads $THREADS
+### Step 1: Clean up the raw file 
+echo '1. Remove missing ALT for input vcf. '
+conda run -n vep bcftools view -e 'ALT = "."' $VCF_FILE -Oz -o $OUTPUT_DIR/${INPUT_VCF_RMMISSINGALT} --threads $THREADS
+echo '2. Split into biallelic.'
+conda run -n vep bcftools norm -m -both -Oz -o $OUTPUT_DIR/${INPUT_VCF_BIALLELIC} $OUTPUT_DIR/${INPUT_VCF_RMMISSINGALT} --threads $THREADS
+echo '3. Remove the duplicated variant'
+conda run -n vep bcftools norm -d exact -Oz -o $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC} --threads $THREADS
 
-# ### Step 2: Filtered sequencing quality PASS
-# echo "3. $(date) Filtered sequencing quality PASS"
-# if [[ "$ONLY_PASS" == "yes" ]]; then
-#     zgrep -E "^#|PASS" $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} | bgzip > $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS}
-# else
-#     mv $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS}
-# fi
+### Step 2: Filtered sequencing quality PASS
+echo "3. $(date) Filtered sequencing quality PASS"
+if [[ "$ONLY_PASS" == "yes" ]]; then
+    zgrep -E "^#|PASS" $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} | bgzip > $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS}
+else
+    mv $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS}
+fi
 
-# ### Step 2.5 Remove intermediate files
-# rm $OUTPUT_DIR/${INPUT_VCF_RMMISSINGALT} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP}
-# echo 'Finished cleaning up the input vcf file.'
+### Step 2.5 Remove intermediate files
+rm $OUTPUT_DIR/${INPUT_VCF_RMMISSINGALT} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC} $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP}
+echo 'Finished cleaning up the input vcf file.'
 
-# ### Step 3: VEP
-# echo "4. $(date) Run VEP for $INPUT_SAMPLE"
-# conda run -n vep bash $SCRIPTS/vep.sh \
-#     -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
-#     -o $OUTPUT_DIR \
-#     -i $INPUT_SAMPLE \
-#     -g $GENOME \
-#     --fork $FORK
+### Step 3: VEP
+echo "4. $(date) Run VEP for $INPUT_SAMPLE"
+conda run -n vep bash $SCRIPTS/vep.sh \
+    -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
+    -o $OUTPUT_DIR \
+    -i $INPUT_SAMPLE \
+    -g $GENOME \
+    --fork $FORK
 
-# ### Step 4: Python
-# # Log file is saved in $OUTPUT_DIR/batch_debug.log
-# echo "5. $(date): Running Python for VEP result management..."
+### Step 4: Python
+# Log file is saved in $OUTPUT_DIR/batch_debug.log
+echo "5. $(date): Running Python for VEP result management..."
 
-# conda run -n vep python "$SCRIPTS/batch.py" \
-#     "$OUTPUT_DIR/${INPUT_VCF_ANNOTATED}" \
-#     "$OUTPUT_DIR/${INPUT_SAMPLE}.txt" \
-#     "$METADATA" \
-#     "$AF_CLINVAR" \
-#     "$AF_PRECITION" \
-#     "$ADA" "$RF" \
-#     "$REVEL" \
-#     "$SPLICEAI_AL" \
-#     "$SPLICEAI_DG" \
-#     "$SPLICEAI_DL" \
-#     "$SPLICEAI_AG" \
-#     "$BAYESDEL_ADDAF" \
-#     "$BAYESDEL_NOAF" \
-#     "$AM_CLASSIFICATION" \
-#     "$AM_PATHOGENICITY" \
-#     "$CLINVAR" \
-#     "$ACMG_CLASSIFICATION" \
-#     "$GENEDB" \
-#     "$CUSTOMIZED_GENEDB" \
-#     "$ONLY_CLINVAR"
+conda run -n vep python "$SCRIPTS/batch.py" \
+    "$OUTPUT_DIR/${INPUT_VCF_ANNOTATED}" \
+    "$OUTPUT_DIR/${INPUT_SAMPLE}.txt" \
+    "$METADATA" \
+    "$AF_CLINVAR" \
+    "$AF_PRECITION" \
+    "$ADA" "$RF" \
+    "$REVEL" \
+    "$SPLICEAI_AL" \
+    "$SPLICEAI_DG" \
+    "$SPLICEAI_DL" \
+    "$SPLICEAI_AG" \
+    "$BAYESDEL_ADDAF" \
+    "$BAYESDEL_NOAF" \
+    "$AM_CLASSIFICATION" \
+    "$AM_PATHOGENICITY" \
+    "$CLINVAR" \
+    "$ACMG_CLASSIFICATION" \
+    "$GENEDB" \
+    "$CUSTOMIZED_GENEDB" \
+    "$ONLY_CLINVAR"
 
 
-# ### Step 5: Run R for data management
-# echo "5. Running R for managing PRS data. "
-# conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Batch20260121.R
-# mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
+### Step 5: Run R for data management
+echo "5. Running R for managing PRS data. "
+conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Batch20260121.R
+mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
 
 ### Step 6: PGx by PharmCat
 if [[ "$RUNPGX" == "no" ]]; then
@@ -432,87 +432,87 @@ else
 
 fi
 
-# ### Step 7: Run PRS analysis if required
-# if [[ "$RUNPRS" == "yes" ]]; then
+### Step 7: Run PRS analysis if required
+if [[ "$RUNPRS" == "yes" ]]; then
     
-#     if [[ -z "$RUNIMPUTATION" ]]; then
-#         echo "Error: --run-imputation must be set when --run-prs is 'yes'"
-#         exit 1
-#     fi
+    if [[ -z "$RUNIMPUTATION" ]]; then
+        echo "Error: --run-imputation must be set when --run-prs is 'yes'"
+        exit 1
+    fi
 
-#     if [[ -z "$GENDER" ]]; then
-#         echo "Error: --gender is required for PRS analysis"
-#         exit 1
-#     fi
+    if [[ -z "$GENDER" ]]; then
+        echo "Error: --gender is required for PRS analysis"
+        exit 1
+    fi
 
-#     echo "7. Running PRS analysis for $INPUT_SAMPLE"
+    echo "7. Running PRS analysis for $INPUT_SAMPLE"
 
-    # # make PRS psam file 
-    # PSAM="$OUTPUT_DIR/${INPUT_SAMPLE}.psam"
-    # rm -f "$PSAM"
-    # printf "#IID\tSEX\n" >> "$PSAM"
-    # # extract individual ID (column 2) and sex (column 5) for the given sample
-    # awk '{print $1"\t"$2}' $METADATA >> $PSAM
+    # make PRS psam file 
+    PSAM="$OUTPUT_DIR/${INPUT_SAMPLE}.psam"
+    rm -f "$PSAM"
+    printf "#IID\tSEX\n" >> "$PSAM"
+    # extract individual ID (column 2) and sex (column 5) for the given sample
+    awk '{print $1"\t"$2}' $METADATA >> $PSAM
 
-#     mkdir -p $OUTPUT_DIR/PRS
+    mkdir -p $OUTPUT_DIR/PRS
 
-#     echo "Now running PGS score for: $INPUT_VCF_BIALLELIC_NODUP_PASS"
+    echo "Now running PGS score for: $INPUT_VCF_BIALLELIC_NODUP_PASS"
 
-#     if [[ -n "$PGSID" ]]; then
-#     echo "Use PGSID: $PGSID. "
-#     conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
-#         -i $INPUT_SAMPLE \
-#         -o $OUTPUT_DIR/PRS \
-#         -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
-#         --metadata $PSAM \
-#         --genome $GENOME \
-#         --only-pass no \
-#         --run-imputation $RUNIMPUTATION \
-#         --pgsid $PGSID \
-#         -t $THREADS || { echo "PRS analysis failed"; exit 1; }
+    if [[ -n "$PGSID" ]]; then
+    echo "Use PGSID: $PGSID. "
+    conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
+        -i $INPUT_SAMPLE \
+        -o $OUTPUT_DIR/PRS \
+        -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
+        --metadata $PSAM \
+        --genome $GENOME \
+        --only-pass no \
+        --run-imputation $RUNIMPUTATION \
+        --pgsid $PGSID \
+        -t $THREADS || { echo "PRS analysis failed"; exit 1; }
 
-#     elif [[ -n "$PGPID" ]]; then
-#         echo "Use PGPID: $PGPID. "
-#         conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
-#             -i $INPUT_SAMPLE \
-#             -o $OUTPUT_DIR/PRS \
-#             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
-#             --metadata $PSAM \
-#             --genome $GENOME \
-#             --only-pass no \
-#             --run-imputation $RUNIMPUTATION \
-#             --pgpid $PGPID \
-#             -t $THREADS || { echo "PRS analysis failed"; exit 1; }
+    elif [[ -n "$PGPID" ]]; then
+        echo "Use PGPID: $PGPID. "
+        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
+            -i $INPUT_SAMPLE \
+            -o $OUTPUT_DIR/PRS \
+            -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
+            --metadata $PSAM \
+            --genome $GENOME \
+            --only-pass no \
+            --run-imputation $RUNIMPUTATION \
+            --pgpid $PGPID \
+            -t $THREADS || { echo "PRS analysis failed"; exit 1; }
 
-#     elif [[ -n "$EFOID" ]]; then
-#         echo "Use EFOID: $EFOID. "
-#         conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
-#             -i $INPUT_SAMPLE \
-#             -o $OUTPUT_DIR/PRS \
-#             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
-#             --metadata $PSAM \
-#             --genome $GENOME \
-#             --only-pass no \
-#             --run-imputation $RUNIMPUTATION \
-#             --efoid $EFOID \
-#             -t $THREADS || { echo "PRS analysis failed"; exit 1; }
+    elif [[ -n "$EFOID" ]]; then
+        echo "Use EFOID: $EFOID. "
+        conda run -n pgsc bash $SCRIPTS/FamilyRisk_PRS_Batch.sh \
+            -i $INPUT_SAMPLE \
+            -o $OUTPUT_DIR/PRS \
+            -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
+            --metadata $PSAM \
+            --genome $GENOME \
+            --only-pass no \
+            --run-imputation $RUNIMPUTATION \
+            --efoid $EFOID \
+            -t $THREADS || { echo "PRS analysis failed"; exit 1; }
 
-#     fi
+    fi
 
-#     # move Reports to the Results folder
-#     mv $OUTPUT_DIR/PRS/results/$INPUT_SAMPLE/score/ $OUTPUT_DIR/Results/PGS_Scores
+    # move Reports to the Results folder
+    mv $OUTPUT_DIR/PRS/results/$INPUT_SAMPLE/score/ $OUTPUT_DIR/Results/PGS_Scores
 
-# fi
+fi
 
 
 ### Step 8: R for PGS density plot 
-# if [[ "$RUNPRS" == "yes" ]]; then
-#     echo "Running R for PGS density plots."
-#     gunzip -d -k $OUTPUT_DIR/Results/PGS_Scores/*popsimilarity.txt.gz
-#     gunzip -d -k $OUTPUT_DIR/Results/PGS_Scores/*pgs.txt.gz
-#     conda run -n varxomics2 Rscript $SCRIPTS/PGS_DensityPlot20260121.R \
-#         $INPUT_SAMPLE \
-#         $OUTPUT_DIR/Results/PGS_Scores/*pgs.txt.gz \
-#         $OUTPUT_DIR/Results/PGS_Scores/*popsimilarity.txt \
-#         $OUTPUT_DIR population
-# fi
+if [[ "$RUNPRS" == "yes" ]]; then
+    echo "Running R for PGS density plots."
+    gunzip -d -k $OUTPUT_DIR/Results/PGS_Scores/*popsimilarity.txt.gz
+    gunzip -d -k $OUTPUT_DIR/Results/PGS_Scores/*pgs.txt.gz
+    conda run -n varxomics2 Rscript $SCRIPTS/PGS_DensityPlot20260121.R \
+        $INPUT_SAMPLE \
+        $OUTPUT_DIR/Results/PGS_Scores/*pgs.txt.gz \
+        $OUTPUT_DIR/Results/PGS_Scores/*popsimilarity.txt \
+        $OUTPUT_DIR population
+fi

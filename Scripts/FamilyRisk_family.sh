@@ -435,35 +435,37 @@ VCF_LIST="${OUTPUT_DIR}/${INPUT_SAMPLE}_vcf_list.txt"
 # # The log file is in $OUTPUT_DIR/family_debug.log
 # echo "5. $(date): Running Python for VEP result management..."
 
-# conda run -n vep python "$SCRIPTS/family.py" \
-#     "$OUTPUT_DIR/${INPUT_VCF_ANNOTATED}" \
-#     "$OUTPUT_DIR/${INPUT_SAMPLE}.txt" \
-#     "$PED" \
-#     "$AF_CLINVAR" \
-#     "$AF_PRECITION" \
-#     "$ADA" "$RF" \
-#     "$REVEL" \
-#     "$SPLICEAI_AL" \
-#     "$SPLICEAI_DG" \
-#     "$SPLICEAI_DL" \
-#     "$SPLICEAI_AG" \
-#     "$BAYESDEL_ADDAF" \
-#     "$BAYESDEL_NOAF" \
-#     "$AM_CLASSIFICATION" \
-#     "$AM_PATHOGENICITY" \
-#     "$CLINVAR" \
-#     "$ACMG_CLASSIFICATION" \
-#     "$GENEDB" \
-#     "$CUSTOMIZED_GENEDB" \
-#     "$FUNCTION_TYPE" \
-#     "$ONLY_CLINVAR"
+conda run -n vep python "$SCRIPTS/family.py" \
+    "$OUTPUT_DIR/${INPUT_VCF_ANNOTATED}" \
+    "$OUTPUT_DIR/${INPUT_SAMPLE}.txt" \
+    "$PED" \
+    "$AF_CLINVAR" \
+    "$AF_PRECITION" \
+    "$ADA" "$RF" \
+    "$REVEL" \
+    "$SPLICEAI_AL" \
+    "$SPLICEAI_DG" \
+    "$SPLICEAI_DL" \
+    "$SPLICEAI_AG" \
+    "$BAYESDEL_ADDAF" \
+    "$BAYESDEL_NOAF" \
+    "$AM_CLASSIFICATION" \
+    "$AM_PATHOGENICITY" \
+    "$CLINVAR" \
+    "$ACMG_CLASSIFICATION" \
+    "$GENEDB" \
+    "$CUSTOMIZED_GENEDB" \
+    "$FUNCTION_TYPE" \
+    "$ONLY_CLINVAR"
 
 
 # ### Step 5: R for pedigree plot 
 # echo "6. Running R for managing data and creating pedigree plot. "
-# if $FUNCTION_TYPE == "carrier" ; then
+# if [[ $FUNCTION_TYPE == "carrier" ]]; then
+#     echo "Running Carrier Screening R script. "
 #     conda run -n varxomics Rscript $SCRIPTS/Carrier_Family20260121.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $PED $OUTPUT_DIR $GENEDB
-# elif $FUNCTION_TYPE == "newborn" ; then
+# elif [[ $FUNCTION_TYPE == "newborn" ]]; then
+#     echo "Running Newborn Risk Screening R script. "
 #     conda run -n varxomics Rscript $SCRIPTS/Newborn_Family20260121.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $PED $OUTPUT_DIR $GENEDB
 # fi
 # mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/

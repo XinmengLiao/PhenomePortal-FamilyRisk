@@ -13,7 +13,7 @@ conflicted::conflicts_prefer(httr::content)
 conflicted::conflicts_prefer(plotly::layout)
 
 ## ---- Define file paths ----
-location = "local" # server or local 
+location = "server" # server or local 
 
 args <- commandArgs(trailingOnly = TRUE)
 sampleid <- args[1]
@@ -122,7 +122,13 @@ compound.heterozygous.res <- function(df){
 	    return("Mother")
 	  }else if (father %in% c("0/0","0|0") & mother %in% c("0/0","0|0")){
 	    return("de novo")
-	  }else{
+	  }else if (father %in% c("./.",".|.")){
+	    return("Mother")
+	  }else if (mother %in% c("./.",".|.")) {
+	    return("Father")
+	  }else if (father == "1" & mother == "."){
+	    return("Uncertained chrX phenotype")
+    }else{
 	    return("Uncertained")
 	  }
 	}
@@ -136,12 +142,12 @@ compound.heterozygous.res <- function(df){
 	  
 	  brief.com.het1 <- brief.tmp %>%
 	    select(Genes, variant_info, ClinVar, ACMG,FatherGenotype, MotherGenotype, all_of(kid_col)) %>% 
+      rowwise() %>%
+	    mutate(origin = infer_origin(kid_col, FatherGenotype, MotherGenotype)) %>%
+	    ungroup() %>%
 	    filter(.data[[kid_col]] %in% c("0/1","1/0","1|0","0|1")) %>% unique() %>% 
 	    filter(ClinVar %in% c("Pathogenic/Likely pathogenic","Pathogenic","Likely pathogenic","Uncertain significance") |
-	             ACMG %in% c("Pathogenic","Likely pathogenic","Uncertain significance")) %>%
-	    rowwise() %>%
-	    mutate(origin = infer_origin(kid_col, FatherGenotype, MotherGenotype)) %>%
-	    ungroup() %>% unique() %>% 
+	             ACMG %in% c("Pathogenic","Likely pathogenic","Uncertain significance")) %>% unique()
 	    filter(origin != "de novo" )
 	    
 	  ch.df <- brief.com.het1 %>% group_by(Genes) %>%

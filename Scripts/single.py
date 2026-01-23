@@ -114,11 +114,11 @@ if cfg["genedb_file"] != "" and cfg["customized_genedb_file"] == "":
 elif cfg["customized_genedb_file"] != "" and cfg["genedb_file"] == "":
     print("Using customized genedb file.")
     genedb = pd.read_csv(cfg["customized_genedb_file"], sep="\t")
-elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and cfg["function_type"] == "carrier":
+elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and user_function_type == "carrier":
     print("Using default Expanded Carrier Screening List.")
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
     genedb = genedb[genedb['Project'].isin(['ACMG_Carrier_Tier 1', 'ACMG_Carrier_Tier 2', 'ACMG_Carrier_Tier 3', 'ACMG_Carrier_Tier 4'])]
-elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and cfg["function_type"] == "newborn":
+elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and user_function_type == "newborn":
     print("Using default Newborn Screening List.")
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
     genedb = genedb[genedb['Project'].isin(['NBScreening'])]

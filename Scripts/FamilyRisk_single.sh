@@ -416,11 +416,19 @@ conda run -n vep python "$SCRIPTS/single.py" \
     "$FUNCTION_TYPE" \
     "$ONLY_CLINVAR"
 
-### Step 5: Run R script for 
+### Step 5: Run R script for carrier or newborn screening
 echo "8. Running R script for data management to final results."
-sampleID=$(gzip -dc "$VCF_FILE" | grep -E '^##|^#CHROM' | tail -n 1 | awk '{print $NF}')
-conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Single20251203.R $sampleID $OUTPUT_DIR/${INPUT_SAMPLE}.txt $GENDER $OUTPUT_DIR/Results $GENEDB
-mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
+if [[ "$FUNCTION_TYPE" == "newborn" ]]; then
+    echo "Running Newborn Screening R script."
+    sampleID=$(gzip -dc "$VCF_FILE" | grep -E '^##|^#CHROM' | tail -n 1 | awk '{print $NF}')
+    conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Single20260121.R $sampleID $OUTPUT_DIR/${INPUT_SAMPLE}.txt $GENDER $OUTPUT_DIR/Results $GENEDB
+    mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
+elif [[ "$FUNCTION_TYPE" == "carrier" ]]; then
+    echo "Running Carrier Screening R script."
+    sampleID=$(gzip -dc "$VCF_FILE" | grep -E '^##|^#CHROM' | tail -n 1 | awk '{print $NF}')
+    conda run -n varxomics Rscript $SCRIPTS/RScripts/Carrier_Single20260121.R $sampleID $OUTPUT_DIR/${INPUT_SAMPLE}.txt $GENDER $OUTPUT_DIR/Results
+    mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
+fi
 
 ### Step 6: PGx by PharmCat
 if [[ "$RUNPGX" == "no" ]]; then

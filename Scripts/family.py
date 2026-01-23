@@ -15,7 +15,24 @@ import pickle
 from collections import defaultdict
 from pathlib import Path
 
+# Setup logging to file
+log_file = os.path.join(os.path.dirname(sys.argv[2]), "family_debug.log")
+with open(log_file, 'w') as f:
+    f.write(f"[{datetime.now()}] batch.py started\n")
+    f.flush()
+
+def log_msg(msg):
+    """Log message to both stdout and file"""
+    print(msg, flush=True)
+    with open(log_file, 'a') as f:
+        f.write(f"[{datetime.now()}] {msg}\n")
+        f.flush()
+
+log_msg("Imports completed")
+
 all_start_time = time.time()
+sys.stdout.flush()
+
 # ====== 1) setting up paths and running parameters ======
 path = 'sysmed'  # local or sysmed
 
@@ -46,7 +63,7 @@ config = {
         "ped_file": sys.argv[3],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list.txt'
+        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list20251125.txt'
     },
     "sysmed": {
         "fileName": sys.argv[1],
@@ -54,7 +71,7 @@ config = {
         "ped_file": sys.argv[3],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list.txt'
+        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list20251125.txt'
     }
 }
 
@@ -85,6 +102,10 @@ user_am_pathogenicity = sys.argv[16]
 user_am_pathogenicity = float(user_am_pathogenicity)
 user_clinvar= sys.argv[17].split(",")
 user_acmg_classification = sys.argv[18].split(",")
+user_function_type = sys.argv[21] # newborn or carrier
+user_clinvar_only = sys.argv[22]
+
+log_msg(user_function_type)
 
 if path not in config:
     raise ValueError(f"unknown path: {path}")
@@ -108,15 +129,19 @@ fam_df = ped_df[(ped_df['FatherID'] != '0') & (ped_df['MotherID'] != '0')]
 
 # GeneDB list
 if cfg["genedb_file"] != "" and cfg["customized_genedb_file"] == "":
-    print("Useing predefined genedb option.")
+    log_msg("Useing predefined genedb option.")
     project_list = cfg["genedb_file"].split(',')
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
     genedb = genedb[genedb['Project'].isin(project_list)]
 elif cfg["customized_genedb_file"] != "" and cfg["genedb_file"] == "":
-    print("Using customized genedb file.")
+    log_msg("Using customized genedb file.")
     genedb = pd.read_csv(cfg["customized_genedb_file"], sep="\t")
-elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "":
-    print("Using default Newborn Screening List.")
+elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and user_function_type == "carrier":
+    log_msg("Using default Expanded Carrier Screening List.")
+    genedb = pd.read_csv(cfg["screening_list"], sep="\t")
+    genedb = genedb[genedb['Project'].isin(['ACMG_Carrier_Tier 1', 'ACMG_Carrier_Tier 2', 'ACMG_Carrier_Tier 3', 'ACMG_Carrier_Tier 4'])]
+elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and user_function_type == "newborn":
+    log_msg("Using default Newborn Screening List.")
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
     genedb = genedb[genedb['Project'].isin(['NBScreening'])]
 else:
@@ -161,7 +186,7 @@ while tLine:
             col_map = { name: idx for idx, name in enumerate(colNames_CSQ) }
         elif tLine.startswith('#CHROM'):
             headings = iContent
-            print(headings)
+            log_msg(str(headings))
         # directly goes into next line
         tLine = file.readline()
         #print(tLine)
@@ -186,13 +211,6 @@ while tLine:
                 parsed_value = extract_decimal_from_string(jText[revel_score_idx])
                 if parsed_value is not None:
                     jText[revel_idx] = parsed_value
-
-        ichr = iContent[headings.index('#CHROM')].split('_')[0]
-        ipos = iContent[headings.index('POS')]
-        iref = iContent[headings.index('REF')]
-        ialt = iContent[headings.index('ALT')]
-        ivariation3 = f"{ipos}_{iref}_{ialt}"
-        ivariation4 = f"{ichr}_{ipos}_{iref}_{ialt}"
                         
         # 1) ClinVar and prediction filtered based on users' needs 
         if 'MAX_AF' in col_map:
@@ -232,7 +250,7 @@ while tLine:
 
     # print progress every 1000000 lines
     if i % 1000000 == 0:
-        print(f"{i} lines processed!")
+        log_msg(f"{i} lines processed!")
 
     # read the next line
     tLine = file.readline()
@@ -240,9 +258,9 @@ while tLine:
 
 file.close()
 total_row = i
-print('Cell 2 VEP annotated File processing done! Now start to map GeneDB and DiseaseDB')
+log_msg('Cell 2 VEP annotated File processing done! Now start to map GeneDB and DiseaseDB')
 end_time = time.time()
-print("Total processing time: {:.2f} seconds".format(end_time - start_time))
+log_msg("Total processing time: {:.2f} seconds".format(end_time - start_time))
 
 # Manage text file into a dataframe
 base_vcf_columns = headings
@@ -314,11 +332,15 @@ try:
         genome='hg38',
         use_ensembl=False,
         use_refseq=True,
-        flatten_consequences=True,
+        username="xinmeng.liao@scilifelab.se",
+        api_key="ak-NUOZZHfs8siGFMDlXyfqgbFNP8HJHt64",
+        use_netrc=False,
+        endpoint_url='https://api.genebe.net/cloud/api-public/v1/variants',
+        flatten_consequences=False,
         output_format="dataframe"
     )
 except Exception as e:
-    print(f"GeneBe annotation failed: {str(e)}")
+    log_msg(f"GeneBe annotation failed: {str(e)}")
     # create an empty DataFrame to keep the structure
     annotated_df = pd.DataFrame(columns=[
         'chr', 'pos', 'ref', 'alt', 'gene_symbol', 
@@ -348,97 +370,133 @@ expanded_reportA = expanded_reportA[expanded_reportA['acmg_classification'].isin
 expanded_reportA = expanded_reportA.drop_duplicates()
 
 
-#%% Cell 4 Parse kid genotype ======================================
-kidID = []
-kidSex = []
-for i, row in fam_df.iterrows():
-        fatherID = row["FatherID"]
-        motherID = row["MotherID"]
-        kidID.append(row["IndividualID"])
-        kidSex.append(str(row["Sex"]))
+#%% Cell 4 Parse kid genotype (Newborn Mode) ======================================
+if user_function_type == "newborn":
+    log_msg("Newborn Screening Mode.")
+    
+    kidID = []
+    kidSex = []
+    for i, row in fam_df.iterrows():
+            fatherID = row["FatherID"]
+            motherID = row["MotherID"]
+            kidID.append(row["IndividualID"])
+            kidSex.append(str(row["Sex"]))
 
-def extract_gt(val):
-    if isinstance(val, str):
-        return val.split(":")[0]
-    return None
+    def extract_gt(val):
+        if isinstance(val, str):
+            return val.split(":")[0]
+        return None
 
-expanded_reportA["FatherGenotype"] = expanded_reportA[fatherID].apply(extract_gt)
-expanded_reportA["MotherGenotype"] = expanded_reportA[motherID].apply(extract_gt)
+    expanded_reportA["FatherGenotype"] = expanded_reportA[fatherID].apply(extract_gt)
+    expanded_reportA["MotherGenotype"] = expanded_reportA[motherID].apply(extract_gt)
 
-for i in range(len(kidID)):
-    kid = kidID[i]
-    sex = str(kidSex[i])
-    if kid in expanded_reportA.columns:
-        varID = f'Kid{i}Genotype_{kid}'
-        varSex = f'Kid{i}Gender_{kid}'
-        expanded_reportA[varID] = expanded_reportA[kid].apply(extract_gt)
-        expanded_reportA[varSex] = ["Male" if sex == "1" else "Female"] * len(expanded_reportA)
-                
-kid_genotype_cols = [col for col in expanded_reportA.columns if col.startswith("Kid") and "Genotype" in col]
-columns_to_replace = ["FatherGenotype", "MotherGenotype"] + kid_genotype_cols
+    for i in range(len(kidID)):
+        kid = kidID[i]
+        sex = str(kidSex[i])
+        if kid in expanded_reportA.columns:
+            varID = f'Kid{i}Genotype_{kid}'
+            varSex = f'Kid{i}Gender_{kid}'
+            expanded_reportA[varID] = expanded_reportA[kid].apply(extract_gt)
+            expanded_reportA[varSex] = ["Male" if sex == "1" else "Female"] * len(expanded_reportA)
+                    
+    kid_genotype_cols = [col for col in expanded_reportA.columns if col.startswith("Kid") and "Genotype" in col]
+    columns_to_replace = ["FatherGenotype", "MotherGenotype"] + kid_genotype_cols
 
-def replace_missing_gt(gt):
-    if isinstance(gt, str):
-        gt = gt.replace("./.", "0/0").replace(".|.", "0|0")
-        gt = re.sub(r"\.", "0", gt)
-    return gt
+    def replace_missing_gt(gt):
+        if isinstance(gt, str):
+            gt = gt.replace("./.", "0/0").replace(".|.", "0|0")
+            gt = re.sub(r"\.", "0", gt)
+        return gt
 
-for col in columns_to_replace:
-    expanded_reportA[col] = expanded_reportA[col].apply(replace_missing_gt)
+    for col in columns_to_replace:
+        expanded_reportA[col] = expanded_reportA[col].apply(replace_missing_gt)
 
-# expanded_reportA['keep'] = False
-# for col in kid_genotype_cols:
-#     expanded_reportA['keep'] |= (
-#         (expanded_reportA[col] != "./.") &
-#         (expanded_reportA["FatherGenotype"] != "./.") &
-#         (expanded_reportA["MotherGenotype"] != "./.")
-#     )
+    # expanded_reportA['keep'] = False
+    # for col in kid_genotype_cols:
+    #     expanded_reportA['keep'] |= (
+    #         (expanded_reportA[col] != "./.") &
+    #         (expanded_reportA["FatherGenotype"] != "./.") &
+    #         (expanded_reportA["MotherGenotype"] != "./.")
+    #     )
 
-# expanded_reportA = expanded_reportA[expanded_reportA['keep']].copy()
-# expanded_reportA.drop(columns=['keep'], inplace=True)
+    # expanded_reportA = expanded_reportA[expanded_reportA['keep']].copy()
+    # expanded_reportA.drop(columns=['keep'], inplace=True)
 
-#%% Cell 5 Parse kid pattern ======================================
+#%% Cell 5 Parse kid pattern (Newborn Mode) ======================================
+if user_function_type == "newborn":
+    
+    for kid_gt_col in kid_genotype_cols:
+        pattern_col = kid_gt_col.replace("Genotype_","Pattern_")
 
-for kid_gt_col in kid_genotype_cols:
-    pattern_col = kid_gt_col.replace("Genotype_","Pattern_")
+        def classify_variant(row):
+            kid = row[kid_gt_col]
+            father = row["FatherGenotype"]
+            mother = row["MotherGenotype"]
+            inh = row['Inheritance']
+            chrom = row['#CHROM']
 
-    def classify_variant(row):
-        kid = row[kid_gt_col]
-        father = row["FatherGenotype"]
-        mother = row["MotherGenotype"]
-        inh = row['Inheritance']
-        chrom = row['#CHROM']
+            if any(gt == "./." for gt in [kid, father, mother]):
+                return "NA"
 
-        if any(gt == "./." for gt in [kid, father, mother]):
-            return "NA"
+            # De novo: 
+            if father in ["0/0", "0|0"] and mother in ["0/0", "0|0"] and kid in ["0/1", "0|1" ,"1/1", "1|1", "1/0", "1|0"]:
+                return "de novo"
 
-        # De novo: 
-        if father in ["0/0", "0|0"] and mother in ["0/0", "0|0"] and kid in ["0/1", "0|1" ,"1/1", "1|1", "1/0", "1|0"]:
-            return "de novo"
+            # Recessive: 
+            elif father in ["0/1", "0|1", "1/0", "1|0"] and mother in ["0/0","0|0"] and kid in ["0/1", "0|1", "1/0", "1|0"] and inh in ["AR","XLR"]:
+                return "recessive"
+            elif mother in ["0/1", "0|1", "1/0", "1|0"] and father in ["0/0","0|0"] and kid in ["0/1", "0|1", "1/0", "1|0"] and inh in ["AR","XLR"]:
+                return "recessive"
+            elif father in ["1"] and mother in ["0"] and kid in ["1"] and chrom == "chrX" and inh in ["AR","XLR"]:
+                return "recessive"
+            elif mother in ["1"] and father in ["0"] and kid in ["1"] and chrom == "chrX" and inh in ["AR","XLR"]:
+                return "recessive"
+            
+            # Dominant
+            elif kid in ["1/1", "1|1", "0/1", "0|1", "1/0", "1|0","1"] and inh in ["AD","Multiple and/or complex pattern","AR; AD","AD; AR","X-linked multiple and/or complex pattern","XLD"]:
+                return "AD/XLD dominant"
+            elif kid in ["1/1", "1|1","1"] and inh in ["AR","XLR"] :
+                return "AR/XLR dominant"
+            else:
+                return "NA"
 
-        # Recessive: 
-        elif father in ["0/1", "0|1", "1/0", "1|0"] and mother in ["0/0","0|0"] and kid in ["0/1", "0|1", "1/0", "1|0"] and inh in ["AR","XLR"]:
-            return "recessive"
-        elif mother in ["0/1", "0|1", "1/0", "1|0"] and father in ["0/0","0|0"] and kid in ["0/1", "0|1", "1/0", "1|0"] and inh in ["AR","XLR"]:
-            return "recessive"
-        elif father in ["1"] and mother in ["0"] and kid in ["1"] and chrom == "chrX" and inh in ["AR","XLR"]:
-            return "recessive"
-        elif mother in ["1"] and father in ["0"] and kid in ["1"] and chrom == "chrX" and inh in ["AR","XLR"]:
-            return "recessive"
-        
-        # Dominant
-        elif kid in ["1/1", "1|1", "0/1", "0|1", "1/0", "1|0","1"] and inh in ["AD","Multiple and/or complex pattern","AR; AD","AD; AR","X-linked multiple and/or complex pattern","XLD"]:
-            return "AD/XLD dominant"
-        elif kid in ["1/1", "1|1","1"] and inh in ["AR","XLR"] :
-            return "AR/XLR dominant"
-        else:
-            return "NA"
+        expanded_reportA[pattern_col] = expanded_reportA.apply(classify_variant, axis=1)
 
-    expanded_reportA[pattern_col] = expanded_reportA.apply(classify_variant, axis=1)
+#%% Cell 6 Pharse Parent Genotypes (Carrier Mode) ======================================
+if user_function_type == "carrier":
+    log_msg("Carrier Screening Mode.")
 
-#%% Cell 6 Output python managed file and extract unique genes ======================================
-print("\nPython output Statistic")
-print(f"Original rows: {total_row}")
-print(f"Filtered and output rows: {len(expanded_reportA)}")
+    fatherID = None
+    motherID = None
+    
+    for i, row in ped_df.iterrows():
+        if row['FatherID'] == 0 and row['MotherID'] == 0:
+            if row['Sex'] == 1:
+                fatherID = row['IndividualID']
+                log_msg(f"Found Father: {fatherID}")
+            elif row['Sex'] == 2:
+                motherID = row['IndividualID']
+                log_msg(f"Found Mother: {motherID}")
+    
+    if fatherID is None or motherID is None:
+        log_msg(f"Warning: Father or Mother not found. Father={fatherID}, Mother={motherID}")
+    else:
+        log_msg(f"Using Family: Father={fatherID}, Mother={motherID}")
+
+    def extract_gt(val):
+        if isinstance(val, str):
+            return val.split(":")[0]
+        return None
+
+    expanded_reportA["FatherGenotype"] = expanded_reportA[fatherID].apply(extract_gt)
+    expanded_reportA["MotherGenotype"] = expanded_reportA[motherID].apply(extract_gt)
+
+#%% Cell 7 Output python managed file and extract unique genes ======================================
+if user_clinvar_only == "yes":
+    expanded_reportA = expanded_reportA[(expanded_reportA["ClinVar_CLNSIG"] != "") & (expanded_reportA["ClinVar_CLNSIG"].notna())]
+
+log_msg("\nPython output Statistic")
+log_msg(f"Original rows: {total_row}")
+log_msg(f"Filtered and output rows: {len(expanded_reportA)}")
 
 expanded_reportA.to_csv(cfg["output_file"], sep="\t", index=False, quoting=3)
