@@ -143,7 +143,7 @@ elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and user_f
 elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "" and user_function_type == "newborn":
     log_msg("Using default Newborn Screening List.")
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
-    genedb = genedb[genedb['Project'].isin(['NBScreening'])]
+    genedb = genedb[genedb['Project'].isin(['BabySeq GroupB', 'BabySeq GroupA'])]
 else:
     raise ValueError("Please provide either a predefined genedb option or a customized genedb file.")
 
@@ -461,6 +461,20 @@ if user_function_type == "newborn":
                 return "NA"
 
         expanded_reportA[pattern_col] = expanded_reportA.apply(classify_variant, axis=1)
+
+# Removing rows where all kids have no mutations (all 0/0 or 0|0)
+    kid_cols = [col for col in expanded_reportA.columns if col.startswith("Kid") and "Genotype" in col]
+    
+    if kid_cols:
+        # Keep rows where at least one kid has a non-wildtype genotype
+        expanded_reportA = expanded_reportA[
+            ~expanded_reportA[kid_cols].apply(
+                lambda row: all(gt in ["0/0", "0|0"] for gt in row),
+                axis=1
+            )
+        ].copy()
+        log_msg(f"Rows remaining after filtering kids without mutations: {len(expanded_reportA)}")
+    
 
 #%% Cell 6 Pharse Parent Genotypes (Carrier Mode) ======================================
 if user_function_type == "carrier":

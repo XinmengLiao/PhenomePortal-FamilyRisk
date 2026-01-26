@@ -130,7 +130,7 @@ elif cfg["customized_genedb_file"] != "" and cfg["genedb_file"] == "":
 elif cfg["genedb_file"] == "" and cfg["customized_genedb_file"] == "":
     log_msg("Using default Newborn Screening List.")
     genedb = pd.read_csv(cfg["screening_list"], sep="\t")
-    genedb = genedb[genedb['Project'].isin(['NBScreening'])]
+    genedb = genedb[genedb['Project'].isin(['BabySeq GroupB', 'BabySeq GroupA'])]
 else:
     raise ValueError("Please provide either a predefined genedb option or a customized genedb file.")
 

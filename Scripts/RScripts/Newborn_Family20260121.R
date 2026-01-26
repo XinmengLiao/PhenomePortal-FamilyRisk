@@ -22,10 +22,14 @@ ped_file <- args[3]
 output_dir <-  args[4]
 genelist <- args[5]
 
+results_dir <- file.path(output_dir, "Results")
+dir.create(results_dir, showWarnings = FALSE)
+
+
 if (location == "local"){
-  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
-  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/NBSeq_Results.xlsx'
+  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
 }
 
 if (location == "server"){
@@ -128,12 +132,13 @@ compound.heterozygous.res <- function(df){
 	    return("Father")
 	  }else if (father == "1" & mother == "."){
 	    return("Uncertained chrX phenotype")
-    }else{
+	  }else{
 	    return("Uncertained")
 	  }
 	}
 	
 	ch.df.all <-data.frame(Genes = character(), variant_info = character(), stringsAsFactors = FALSE)
+
 	for ( i in kid_genotype_col){
 	  kid_col <- colnames(df)[i]
 	  kid_origin_col <- gsub("Genotype","Origin",kid_col)
@@ -142,14 +147,14 @@ compound.heterozygous.res <- function(df){
 	  
 	  brief.com.het1 <- brief.tmp %>%
 	    select(Genes, variant_info, ClinVar, ACMG,FatherGenotype, MotherGenotype, all_of(kid_col)) %>% 
-      rowwise() %>%
-	    mutate(origin = infer_origin(kid_col, FatherGenotype, MotherGenotype)) %>%
+	    rowwise() %>%
+	    mutate(origin = infer_origin(.data[[kid_col]], FatherGenotype, MotherGenotype)) %>%
 	    ungroup() %>%
 	    filter(.data[[kid_col]] %in% c("0/1","1/0","1|0","0|1")) %>% unique() %>% 
-	    filter(ClinVar %in% c("Pathogenic/Likely pathogenic","Pathogenic","Likely pathogenic","Uncertain significance") |
-	             ACMG %in% c("Pathogenic","Likely pathogenic","Uncertain significance")) %>% unique()
-	    filter(origin != "de novo" )
-	    
+	    filter(ClinVar %in% c("Pathogenic/Likely pathogenic","Pathogenic","Likely pathogenic","Uncertain significance") &
+	             ACMG %in% c("Pathogenic","Likely pathogenic","Uncertain significance")) %>% unique() %>% 
+	  filter(origin != "de novo" )
+	  
 	  ch.df <- brief.com.het1 %>% group_by(Genes) %>%
 	    filter(n() >= 2) %>%   # must have more than two variant
       summarise(
@@ -163,19 +168,31 @@ compound.heterozygous.res <- function(df){
         .groups = "drop"
       ) 
 	  
-	  brief.com.het2 <- brief.com.het1 %>% 
-	    left_join(., ch.df) %>% select(-origins) %>% filter(Compound_heterozygous %in% c("Yes","Uncertained")) %>% 
-	    rename(!!kid_origin_col := origin, !!kid_ch_col := Compound_heterozygous)
-	  
-	  ch.df.all <- full_join(ch.df.all, brief.com.het2, by = c("Genes","variant_info"))
+	  if(nrow(ch.df) == 0){
+	    ch.df = data.frame(origin = NA, Compound_heterozygous = NA) %>% 
+	      rename(!!kid_origin_col := origin, !!kid_ch_col := Compound_heterozygous)
+	    brief.com.het2 <- cbind(brief.com.het1, ch.df)
+	    ch.df.all <- full_join(ch.df.all, brief.com.het2)
+	    kid_col1 = colnames(ch.df.all)[grep("Origin|Compound", colnames(ch.df.all))]
+	    df <- df %>% left_join(., ch.df.all %>% select(Genes, variant_info, all_of(kid_col1)) %>% unique(), by = c("Genes","variant_info")) 
+	  }else{
+	    brief.com.het2 <- brief.com.het1 %>% 
+	      left_join(., ch.df) %>% select(-origins) %>% 
+	      filter(Compound_heterozygous %in% c("Yes","Uncertained","Uncertained chrX phenotype")) %>% 
+	      rename(!!kid_origin_col := origin, !!kid_ch_col := Compound_heterozygous)
+	    ch.df.all <- full_join(ch.df.all, brief.com.het2, by = c("Genes","variant_info"))
+	    kid_col1 = colnames(ch.df.all)[grep("Origin|Compound", colnames(ch.df.all))]
+	    df <- df %>% left_join(., ch.df.all %>% select(Genes, variant_info, all_of(kid_col1)) %>% unique(), by = c("Genes","variant_info")) 
+	  }
 	}
-  
-	kid_col1 = colnames(ch.df.all)[grep("Origin|Compound", colnames(ch.df.all))]
 	
-	df1 <- df %>% 
-	  left_join(., ch.df.all %>% select(Genes, variant_info, all_of(kid_col1)) %>% unique()) 
+	index1 <- grep("Kid", colnames(df))
+	kid_compoundhet_col <- intersect(grep("Compound_heterozygous",colnames(df)), index1)
+	df <- df %>% 
+	  filter(if_any(all_of(kid_compoundhet_col),
+	                ~ .x %in% c("Yes", "Uncertained","Uncertained chrX phenotype")))
 	
-	return(df1)
+	return(df)
 }
 
 # Function 2: Generate the pedigree plot for each clinical P/LP variant
@@ -227,33 +244,37 @@ plot_pedig.res <- function(df, variant_info, ped){
 
 # Function 3: Manage the screen-positive diseases with compound heterozygous
 positive.monogenic.plp.family <- function(df, ped){
+  # analyse compound heterozygous results
   result.ch <- compound.heterozygous.res(df)
   
-  kid_pattern_cols <- colnames(result.ch)[grep("Kid.*Pattern", colnames(result.ch))]
-  kid_ch_cols <- colnames(result.ch)[grep("Kid.*Compound_heterozygous", colnames(result.ch))]
-  kid_genotype_cols <- colnames(result.ch)[grep("Kid.*Genotype", colnames(result.ch))]
-  
-  # positive monogenic disease
-  plp.monogenic <- result.ch %>% 
+  # analyse monogenic positive results
+  kid_pattern_cols <- colnames(df)[grep("Kid.*Pattern", colnames(df))]
+  kid_genotype_cols <- colnames(df)[grep("Kid.*Genotype", colnames(df))]
+  plp.monogenic <- df %>% 
     filter(
-      ((grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) | grepl("Pathogenic|Likely_pathogenic",acmg_classification)) & 
-         if_any(all_of(kid_pattern_cols), ~ grepl("dominant", .x, ignore.case = TRUE))) |
-        if_any(all_of(kid_ch_cols), ~ !is.na(.x))) %>% unique()
-
-  plp.monogenic.final <- plp.monogenic %>% 
-    mutate(HGVSc = gsub("^.*:","",HGVSc), HGVSp = gsub("^.*:","",HGVSp)) %>% 
-    select(Disease, Inheritance, Genes, X.CHROM, POS, REF, ALT, HGVSc, HGVSp, ClinVar_CLNSIG, acmg_classification, 
-           IMPACT, MAX_AF, FatherGenotype, MotherGenotype, all_of(kid_genotype_cols), all_of(kid_ch_cols)) %>% unique() %>% 
-    left_join(., compare_positive %>% 
-                select(Reported.Disease, `Results from Other NBSeq Projects`, Genes, Transcript) %>% unique(),
-              by = c("Genes", "HGVSc" = "Transcript")) %>% 
-    rename(`Reported Disease from Other NBSeq Projects` = Reported.Disease) %>% unique()
+      ((grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) & grepl("Pathogenic|Likely_pathogenic",acmg_classification)) & 
+         if_any(all_of(kid_pattern_cols), ~ grepl("dominant", .x, ignore.case = TRUE)))) %>% unique()
   
-  ## generate the pedigree for clinical P/LP variants by default, not for the compound heterozygous ones
-  positive.res.pedigree <- plp.monogenic %>% 
-    filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) | grepl("Pathogenic|Likely_pathogenic",acmg_classification))
+  if(nrow(plp.monogenic) > 0){
+    ## generate the pedigree for clinical P/LP variants by default, not for the compound heterozygous ones
+    positive.res.pedigree <- plp.monogenic %>% 
+      filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) & grepl("Pathogenic|Likely_pathogenic",acmg_classification))
+    plot_pedig.res(df = positive.res.pedigree, ped = ped, variant_info = positive.res.pedigree$variant_info)
+  }
   
-  plot_pedig.res(df = positive.res.pedigree, ped = ped, variant_info = positive.res.pedigree$variant_info)
+  # merge two results together
+  plp.monogenic.final <- rbind(plp.monogenic, result.ch) %>% unique()
+  
+  if(nrow(plp.monogenic.final) > 0 ){
+    plp.monogenic.final <- plp.monogenic.final %>% 
+      mutate(HGVSc = gsub("^.*:","",HGVSc), HGVSp = gsub("^.*:","",HGVSp)) %>% 
+      select(Disease, Inheritance, Genes, X.CHROM, POS, REF, ALT, HGVSc, HGVSp, ClinVar_CLNSIG, acmg_classification, 
+             IMPACT, MAX_AF, FatherGenotype, MotherGenotype, all_of(kid_genotype_cols), all_of(kid_ch_cols)) %>% unique() %>% 
+      left_join(., compare_positive %>% 
+                  select(Reported.Disease, `Results from Other NBSeq Projects`, Genes, Transcript) %>% unique(),
+                by = c("Genes", "HGVSc" = "Transcript")) %>% 
+      rename(`Reported Disease from Other NBSeq Projects` = Reported.Disease) %>% unique()
+  }
   
   return(plp.monogenic.final)
 }

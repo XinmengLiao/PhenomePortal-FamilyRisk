@@ -23,10 +23,14 @@ metadata_file <- args[3]
 output_dir <- args[4]
 genelist <- args[5]
 
+results_dir <- file.path(output_dir, "Results")
+dir.create(results_dir, showWarnings = FALSE)
+
+
 if (location == "local"){
-  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
-  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/NBSeq_Results.xlsx'
+  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
 }
 
 if (location == "server"){
@@ -51,11 +55,6 @@ genedb1 <- genedb %>% select(Genes, MIM, Inheritance, Disorder_Group,GenCC_Class
 result1 <- result %>% 
   mutate(MIM = as.character(MIM)) %>% 
   left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
-
-# genedb1 <- genedb %>% select(Genes, MIM, Inheritance, Disorder_Group,GenCC_Classification, GenCC_Submitter ) %>% unique()
-# result1 <- result %>% 
-#   mutate(MIM = as.character(MIM)) %>% 
-#   left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
 
 gender <- read.csv(gender_file,header = F,sep = "\t") # include sample ID and gender 
 colnames(gender) <- c("Sample","Gender")

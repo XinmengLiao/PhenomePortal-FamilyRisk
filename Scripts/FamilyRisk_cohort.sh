@@ -386,8 +386,13 @@ conda run -n vep python "$SCRIPTS/batch.py" \
 
 ### Step 5: Run R for data management
 echo "5. Running R for managing PRS data. "
-conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Batch20260121.R
+conda run -n varxomics Rscript $SCRIPTS/RScripts/Newborn_Batch20260121.R $INPUT_SAMPLE \
+    $OUTPUT_DIR/${INPUT_SAMPLE}.txt \
+    $METADATA \
+    $OUTPUT_DIR \
+    $GENEDB
 mv $OUTPUT_DIR/${INPUT_SAMPLE}.txt $OUTPUT_DIR/Results/
+
 
 ### Step 6: PGx by PharmCat
 if [[ "$RUNPGX" == "no" ]]; then
