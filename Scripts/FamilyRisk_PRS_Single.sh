@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # This script is for running PRS for merged VCF files, including cohort and family-based analysis.
-set -e
-set -o pipefail  # Exit on pipe failure too
+#set -e
+#set -o pipefail  # Exit on pipe failure too
 
 # scripts for steamline the whole pipeline
 beagle="/mnt/nas/Genomics/Genome/FamilyRisk/tools/beagle5.jar"
@@ -35,8 +35,6 @@ OPTIONS:
     --run-imputation                Whether to run imputation step, default is yes. 
                                     Options: yes, no. 
                                     It is recommended to run imputation for WGS vcf files with 0/0 genotypes. 
-    --only-pass                    	Only keep the PASS variant in vcf file. Default is yes. 
-    								Options: yes, no. Default is yes.  
     -h, --help                      Display this help message
     -t, --threads  THREADS          Threads for bcftools, default is 20 
 
@@ -54,7 +52,6 @@ OUTPUT_DIR=""
 VCF_FILE=""
 SAMPLE_META=""
 GENOME="GRCH38"
-ONLY_PASS="yes"
 THREADS="20"  # Default value
 PGSID=""
 PGPID=""
@@ -82,10 +79,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --metadata)
             SAMPLE_META="$2"
-            shift 2
-            ;;
-        --only-pass)
-            ONLY_PASS="$2"
             shift 2
             ;;
         --pgsid)
@@ -162,7 +155,6 @@ echo "Input Sample ID: $INPUT_SAMPLE"
 echo "VCF File: $VCF_FILE"
 echo "Output Directory: $OUTPUT_DIR"
 echo "Reference Genome: $GENOME"
-echo "Pass only: $ONLY_PASS"
 echo "Sample Metadata: $SAMPLE_META"
 echo "Run Imputation: $RUNIMPUTATION"
 echo "PGS ID: $PGSID"
@@ -195,7 +187,7 @@ fi
 # # Step 1: remove the 'chr' in users VCF file
 echo "Removing 'chr' in $VCF_FILE at $(date)." 
 bcftools annotate --rename-chrs $remove_chr_file $VCF_FILE -Oz -o $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz --threads $THREADS || { echo "ERROR: bcftools annotate failed"; exit 1; }
-tabix -p -f vcf $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz
+tabix -p vcf $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz -f
 
 # Step 2: separate into 1-22 chromosomes for imputation (If imputation is required)
 if [[ "$RUNIMPUTATION" != "yes" ]]; then
@@ -213,8 +205,8 @@ else
     mv $SAMPLE_META $OUTPUT_DIR/${INPUT_SAMPLE}-imputed.allchr.psam
     printf "sampleset,path_prefix,chrom,format\n" > $OUTPUT_DIR/${INPUT_SAMPLE}-pgsc-input.csv
 
-    #for i in $(seq 1 22); do 
-    for i in 1; do
+    for i in $(seq 1 22); do 
+    #for i in 1; do
         SUB_OUTPUT_DIR=$OUTPUT_DIR/chromosome-file/chr${i}
         mkdir -p $SUB_OUTPUT_DIR
         
@@ -230,7 +222,7 @@ else
         echo "Split into chr${i} at $(date)."
         bcftools view -r ${i} $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz \
             -Oz -o $SPLIT_VCF --threads $THREADS
-        tabix -p -f vcf $SPLIT_VCF
+        tabix -p vcf $SPLIT_VCF -f
     
         # normalize with assembly
         echo "Normalized $SPLIT_VCF to $GENOME at $(date)."
@@ -245,7 +237,7 @@ else
             ref=$ref_dir/ALL.chr${i}.vcf.gz \
             out=$SUB_OUTPUT_DIR/${INPUT_SAMPLE}_chr${i}_norm_impute \
             map=$map_dir/plink.chr${i}.map \
-            nthreclearads=$THREADS
+            nthreads=$THREADS
         
         # filtered out low-quality imputed variants
         echo "$(date): Filtering out low-quality variants for $IMPUTE_VCF"
@@ -260,7 +252,7 @@ else
         bcftools view -h $IMPUTE_FILTERED_VCF | tail -n 1 >> $SUB_OUTPUT_DIR/header.txt
         
         bcftools reheader -h $SUB_OUTPUT_DIR/header.txt $IMPUTE_FILTERED_VCF > $REHEADER_VCF
-        tabix -p -f vcf $REHEADER_VCF
+        tabix -p vcf $REHEADER_VCF -f
         
         bcftools annotate $REHEADER_VCF \
             --set-id='%CHROM:%POS:%REF:%ALT' --threads $THREADS \

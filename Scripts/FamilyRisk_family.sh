@@ -573,7 +573,9 @@ if [[ "$RUNPRS" == "yes" ]]; then
     fi
 
     # move Reports to the Results folder
-    mv $OUTPUT_DIR/PRS/results/$INPUT_SAMPLE/score/ $OUTPUT_DIR/Results/PGS_Scores
+    mkdir -p $OUTPUT_DIR/Results/PGS_Scores
+    newname=$(echo "$INPUT_SAMPLE" | sed 's/_/-/g')
+    mv $OUTPUT_DIR/PRS/results/$newname/score/ $OUTPUT_DIR/Results/PGS_Scores
 
     # if final results can be generated, remove intermediate files 
     if [[ -f $(compgen -G "$OUTPUT_DIR/Results/PGS_Scores/*.pgs.txt.gz") ]] && \

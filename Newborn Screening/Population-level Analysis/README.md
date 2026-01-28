@@ -1,6 +1,7 @@
 ## Newborn-Population
 ### Command for anlaysis
 ```bash
+# for 103 TR newborns
 Scripts="/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts"
 bash $Scripts/FamilyRisk_cohort.sh \
 	-i newborn103 \
@@ -11,7 +12,19 @@ bash $Scripts/FamilyRisk_cohort.sh \
 	--only-clinvar yes --clinvar Pathogenic,Likely_pathognic \
   	--fork 20 --threads 20 \
   	--run-prs yes --run-imputation yes --pgsid PGS002760 --run-pgx no
+
+# smaller test cohort, four newborns were extracted from the merged file. 
+bash Scripts/FamilyRisk_cohort1.sh \
+	-i cohort_small \
+	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/cohort_small_biallelic_nodup_pass.vcf.gz \
+	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort \
+	--sample-metadata /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/cohort_small_gender.txt \
+	--genome GRCH38 --only-pass yes --genedb NBScreening \
+	--only-clinvar yes --clinvar Pathogenic,Likely_pathognic --af-clinvar 0.05 \
+  	--fork 20 --threads 20 \
+  	--run-prs yes --run-imputation yes --pgsid PGS002248 --run-pgx no
 ```
+
 
 ### UI Design
 Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/Results`
@@ -20,7 +33,7 @@ The whole result page could be devided into 6 parts:
 2) Cohort statistics and Variant statistics.
 3) Result Summary: Screen-positive and Carrier status.
 4) Inhouse Allele frequency for all filtered variants.
-5) PGS density plot and the scores for all individual. (link out to the HTML file). 
+5) PGS density plot and the scores for all individual. (link out to the HTML file).
 
 #### 1) Complete result table.
 `newborn103.txt` 

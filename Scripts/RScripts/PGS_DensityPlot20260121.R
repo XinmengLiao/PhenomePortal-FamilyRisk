@@ -18,12 +18,15 @@ pop_file <- args[3]
 output_dir <- args[4]
 cohort <- args[5] # family or population
 
+results_dir <- file.path(output_dir, "Results")
+dir.create(results_dir, showWarnings = FALSE)
+
 # for family, the family PGS will be compared with the entire reference populations;
 # for population, the population PGS will be compared with each of the super-population. 
 
 ## ---- Load files ----
 result <- read.csv(result_file,header = T,sep = "\t") 
-pop <- read.csv(pop_file,header = T,sep = "\t") %>% select(sampleset, FID, IID, SuperPop, Group) %>% unique()
+pop <- read.csv(pop_file,header = T,sep = "\t") %>% select(sampleset, FID, IID, SuperPop) %>% unique()
 result <- result %>% left_join(., pop)
 
 ## ---- Family ----

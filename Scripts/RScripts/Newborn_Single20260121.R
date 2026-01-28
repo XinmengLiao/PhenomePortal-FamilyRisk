@@ -15,7 +15,6 @@ conflicted::conflicts_prefer(plotly::layout)
 
 ## ---- Define file paths ----
 location = "server" # server or local 
-
 args <- commandArgs(trailingOnly = TRUE)
 sampleID <- args[1]
 result_file <- args[2]
@@ -23,10 +22,13 @@ gender <- args[3]
 output_dir <- args[4]
 genelist <- args[5]
 
+results_dir <- file.path(output_dir, "Results")
+dir.create(results_dir, showWarnings = FALSE)
+
 if (location == "local"){
-  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
-  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/NBSeq_Results.xlsx'
+  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
 }
 
 if (location == "server"){
@@ -43,10 +45,10 @@ genelist <- unlist(strsplit(genelist,","))
 
 genedb <- read.csv(genedb_file,header = T,sep = "\t") %>% filter(Project %in% genelist)
 genedb1 <- genedb %>% select(Genes, MIM, Inheritance, Disorder_Group,GenCC_Classification, GenCC_Submitter ) %>% unique()
-result1 <- result %>% 
-  mutate(MIM = as.character(MIM)) %>% 
-  left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
-  
+# result1 <- result %>% 
+#   mutate(MIM = as.character(MIM)) %>% 
+#   left_join(., genedb1, by = c("Genes","MIM", "Inheritance")) %>% unique()
+#   
 if ("NBScreening" %in% genelist){
   remove.variant <- read.csv(TR_removed_variant, header = T, sep = "\t")
   result <- result %>% filter(!(variant_info %in% remove.variant$variant_info))
@@ -67,11 +69,11 @@ compare_carrier <- read.xlsx(compare_file,sheetName = "All-Carrier") %>% filter(
 
 ## ---- General Summary Table ----
 total_variantnum <- length(unique(result$variant_info))
-total_plp <- result %>% filter(grepl("Pathogenic|Likely_pathogneic",ClinVar_CLNSIG) |
-                                 grepl("Pathogenic|Likely_pathogneic",acmg_classification)) %>% 
+total_plp <- result %>% filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) |
+                                 grepl("Pathogenic|Likely_pathogenic",acmg_classification)) %>% 
   pull(variant_info) %>% unique() %>% length()
 general.info = data.frame(
-  Content = c("Sample ID", "Sex", "Filtered variants", "Clinical P/LP variants"),
+  Content = c("Sample ID", "Sex", "Filtered variants", "Clinical P/LP variants (ClinVar or ACMG)"),
   Count = c(sampleID, gender, total_variantnum, total_plp)
 )
 
@@ -96,8 +98,8 @@ genotype.count.single <- function(data, sampleid, gender){
 }
 
 positive.monogenic.plp.single <- function(data){
-  plp <- data %>% filter(grepl("Pathogenic|Likely_pathogneic",ClinVar_CLNSIG) &
-                           grepl("Pathogenic|Likely_pathogneic",acmg_classification))
+  plp <- data %>% filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) &
+                           grepl("Pathogenic|Likely_pathogenic",acmg_classification))
   
   # positive monogenic disease
   plp.monogenic <- plp %>% filter(
@@ -118,8 +120,8 @@ positive.monogenic.plp.single <- function(data){
 }
 
 carrier.plp <- function(data){
-  carrier <- data %>% filter(grepl("Pathogenic|Likely_pathogneic",ClinVar_CLNSIG) &
-                             grepl("Pathogenic|Likely_pathogneic",acmg_classification)) %>% 
+  carrier <- data %>% filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) &
+                             grepl("Pathogenic|Likely_pathogenic",acmg_classification)) %>% 
     filter(Inheritance %in% c("AR","XLR")) 
   
   carrier.disease <- carrier %>% 

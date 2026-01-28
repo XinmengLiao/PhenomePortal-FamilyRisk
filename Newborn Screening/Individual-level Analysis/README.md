@@ -9,7 +9,7 @@ bash $Scripts/FamilyRisk_single.sh --newborn \
 	--genome GRCH38 --only-pass yes --gender Female --genedb NBScreening --run-pgx yes \
   	--fork 20 --threads 20
 
-# single - newborn with PGS
+# single - newborn with PGS (rWGS-F1-Child)
 # If run PGS, must avoid using underscore in naming files and folders
 bash $Scripts/FamilyRisk_single.sh --newborn \
 	-i rwgs1_kid \
@@ -18,6 +18,15 @@ bash $Scripts/FamilyRisk_single.sh --newborn \
 	--genome GRCH38 --only-pass yes --gender Female --genedb NBScreening --run-pgx yes \
   	--fork 20 --threads 20 \
   	--run-prs yes --run-imputation yes --pgsid PGS002760
+
+# single - newborn with PGS (P0064_1002)
+bash Scripts/FamilyRisk_single.sh --newborn \
+	-i P0064_1002 \
+	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-1002/P0064_1002.vcf.gz \
+	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-1002 \
+	--genome GRCH38 --only-pass yes --gender Male --genedb NBScreening --af-clinvar 0.05 --only-clinvar yes --clinvar Pathogenic,Likely_pathognic \
+  	--fork 20 --threads 20 \
+  	--run-prs yes --run-imputation yes --pgsid PGS001893 --run-pgx yes
 ```
 
 ## UI design

@@ -1,7 +1,7 @@
 ## Carrier-Family
 ### Command for analysis
 ```bash
-# family - carrier without PGS
+# family - carrier with PGS
 # the gene-disease db is customized with all ACMG-carrier-screening-list and IDH3A added. 
 Scripts="/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts"
 bash $Scripts/FamilyRisk_family.sh --carrier \
@@ -10,8 +10,8 @@ bash $Scripts/FamilyRisk_family.sh --carrier \
 	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1 \
 	--ped /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/rwgs_F1.ped \
 	--customized-genedb /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/carrier_rwgs1_customized_genelist.txt \
-	--genome GRCH38 --only-pass yes --carrier --run-pgx yes \
-  	--fork 20 --threads 20
+	--genome GRCH38 --only-pass yes --carrier --run-pgx yes --af-clinvar 0.05 \
+	--fork 20 --threads 20 --pgsid PGS002106
 ```
 
 ### UI design
@@ -21,6 +21,7 @@ It will be nice if the following contents could be included in the webpage:
 2) Couple details and variant summary.
 3) Potential recessive disease that will be inherited to the offsprings.
 4) PGx information.
+5) PGS information. 
 
 #### 1) Complete result table.
 `rwgsF1.txt`
@@ -35,3 +36,6 @@ It will be nice if the following contents could be included in the webpage:
 
 #### 4) PGx information
 Results from PharmCat in HTML and/or JSON file.
+
+#### 5) PGS information
+Results generated from pgsc_calc: `PGS_Scores/rwgsF1_popsimilarity.txt`, `PGS_Scores/rwgsF1_popsimilarity.txt`

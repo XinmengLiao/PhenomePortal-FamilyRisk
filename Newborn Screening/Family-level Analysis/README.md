@@ -1,6 +1,7 @@
 ## Newborn-Family
 ### Command for analysis
 ```bash
+# trio data
 Scripts="/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts"
 bash $Scripts/FamilyRisk_family.sh --newborn \
 	-i rwgsF1 \
