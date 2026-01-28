@@ -521,11 +521,6 @@ if [[ "$RUNPRS" == "yes" ]]; then
         exit 1
     fi
 
-    if [[ -z "$GENDER" ]]; then
-        echo "Error: --gender is required for PRS analysis"
-        exit 1
-    fi
-
     echo "7. Running PRS analysis for $INPUT_SAMPLE"
 
     # make PRS psam file 
@@ -533,7 +528,7 @@ if [[ "$RUNPRS" == "yes" ]]; then
     rm -f "$PSAM"
     printf "#IID\tSEX\n" >> "$PSAM"
     # extract individual ID (column 2) and sex (column 5) for the given sample
-    awk '{print $1"\t"$2}' $METADATA >> $PSAM
+    awk '{print $2"\t"$5}' $PED >> $PSAM
 
     mkdir -p $OUTPUT_DIR/PRS
 
@@ -547,7 +542,6 @@ if [[ "$RUNPRS" == "yes" ]]; then
         -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP_PASS} \
         --metadata $PSAM \
         --genome $GENOME \
-        --only-pass no \
         --run-imputation $RUNIMPUTATION \
         --pgsid $PGSID \
         -t $THREADS || { echo "PRS analysis failed"; exit 1; }
@@ -560,7 +554,6 @@ if [[ "$RUNPRS" == "yes" ]]; then
             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
             --metadata $PSAM \
             --genome $GENOME \
-            --only-pass no \
             --run-imputation $RUNIMPUTATION \
             --pgpid $PGPID \
             -t $THREADS || { echo "PRS analysis failed"; exit 1; }
@@ -573,7 +566,6 @@ if [[ "$RUNPRS" == "yes" ]]; then
             -v $OUTPUT_DIR/${INPUT_VCF_BIALLELIC_NODUP} \
             --metadata $PSAM \
             --genome $GENOME \
-            --only-pass no \
             --run-imputation $RUNIMPUTATION \
             --efoid $EFOID \
             -t $THREADS || { echo "PRS analysis failed"; exit 1; }
@@ -582,6 +574,14 @@ if [[ "$RUNPRS" == "yes" ]]; then
 
     # move Reports to the Results folder
     mv $OUTPUT_DIR/PRS/results/$INPUT_SAMPLE/score/ $OUTPUT_DIR/Results/PGS_Scores
+
+    # if final results can be generated, remove intermediate files 
+    if [[ -f $(compgen -G "$OUTPUT_DIR/Results/PGS_Scores/*.pgs.txt.gz") ]] && \
+        [[ -f $(compgen -G "$OUTPUT_DIR/Results/PGS_Scores/*.popsimilarity.gz") ]]; then        
+        rm -rf $OUTPUT_DIR/PRS/work/
+        rm -rf $OUTPUT_DIR/PRS/results/
+        rm -rf $OUTPUT_DIR/PRS/chromosome-file/
+    fi
 
 fi
 

@@ -1,3 +1,6 @@
 Scripts/contigs.txt
 pharmcat.*.log
 pharmcat.log
+.nextflow/
+work/
+.nextflow.log*

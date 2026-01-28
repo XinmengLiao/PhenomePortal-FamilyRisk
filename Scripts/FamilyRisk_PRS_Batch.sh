@@ -185,9 +185,9 @@ fi
 # # Step 1: remove the 'chr' in users VCF file
 echo "Removing 'chr' in $VCF_FILE at $(date)." 
 bcftools annotate --rename-chrs $remove_chr_file $VCF_FILE -Oz -o $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz --threads $THREADS || { echo "ERROR: bcftools annotate failed"; exit 1; }
-tabix -p -f vcf $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz
+tabix -p vcf $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz -f
 
-Step 2: separate into 1-22 chromosomes for imputation (If imputation is required)#
+# # Step 2: separate into 1-22 chromosomes for imputation (If imputation is required)
 if [[ "$RUNIMPUTATION" != "yes" ]]; then
     echo "Skipping imputation step as per user request."
     mv $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz $OUTPUT_DIR/${INPUT_SAMPLE}-imputed.allchr.vcf.gz
@@ -203,8 +203,7 @@ else
     mv $SAMPLE_META $OUTPUT_DIR/${INPUT_SAMPLE}-imputed.allchr.psam
     printf "sampleset,path_prefix,chrom,format\n" > $OUTPUT_DIR/${INPUT_SAMPLE}-pgsc-input.csv
 
-    #for i in $(seq 1 22); do 
-    for i in 1; do
+    for i in $(seq 1 22); do 
         SUB_OUTPUT_DIR=$OUTPUT_DIR/chromosome-file/chr${i}
         mkdir -p $SUB_OUTPUT_DIR
         
@@ -220,7 +219,7 @@ else
         echo "Split into chr${i} at $(date)."
         bcftools view -r ${i} $OUTPUT_DIR/${INPUT_SAMPLE}-renamed.vcf.gz \
             -Oz -o $SPLIT_VCF --threads $THREADS
-        tabix -p -f vcf $SPLIT_VCF
+        tabix -p vcf $SPLIT_VCF -f
     
         # normalize with assembly
         echo "Normalized $SPLIT_VCF to $GENOME at $(date)."
@@ -235,7 +234,7 @@ else
             ref=$ref_dir/ALL.chr${i}.vcf.gz \
             out=$SUB_OUTPUT_DIR/${INPUT_SAMPLE}_chr${i}_norm_impute \
             map=$map_dir/plink.chr${i}.map \
-            nthreclearads=$THREADS
+            nthreads=$THREADS
         
         # filtered out low-quality imputed variants
         echo "$(date): Filtering out low-quality variants for $IMPUTE_VCF"
@@ -250,7 +249,7 @@ else
         bcftools view -h $IMPUTE_FILTERED_VCF | tail -n 1 >> $SUB_OUTPUT_DIR/header.txt
         
         bcftools reheader -h $SUB_OUTPUT_DIR/header.txt $IMPUTE_FILTERED_VCF > $REHEADER_VCF
-        tabix -p -f vcf $REHEADER_VCF
+        tabix -p vcf $REHEADER_VCF -f
         
         bcftools annotate $REHEADER_VCF \
             --set-id='%CHROM:%POS:%REF:%ALT' --threads $THREADS \
@@ -305,6 +304,7 @@ elif [[ -n "$PGPID" ]]; then
 elif [[ -n "$EFOID" ]]; then
     echo "Use EFOID: $EFOID. "
     $nextflow run pgscatalog/pgsc_calc \
+        -profile conda \
         --input $OUTPUT_DIR/${INPUT_SAMPLE}-pgsc-input.csv \
         --efo_id $EFOID \
         --target_build $target_build \

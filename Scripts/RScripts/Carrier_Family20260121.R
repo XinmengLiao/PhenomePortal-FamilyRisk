@@ -11,7 +11,7 @@ conflicted::conflicts_prefer(httr::content)
 conflicted::conflicts_prefer(plotly::layout)
 
 ## ---- Define file paths ----
-location = "local" # server or local 
+location = "server" # server or local 
 
 args <- commandArgs(trailingOnly = TRUE)
 sampleid <- args[1]
@@ -20,21 +20,15 @@ ped_file <- args[3]
 output_dir <-  args[4]
 genelist <- args[5]
 
-
-sampleid = "rwgsF1"
-input_file = "/Users/xinmengliao/Desktop/rwgsF1.txt"
-ped_file = "/Users/xinmengliao/Desktop/rwgs_F1.ped"
-output_dir = "/Users/xinmengliao/Desktop"
-genelist <- c("NBScreening")
+results_dir <- file.path(output_dir, "Results")
+dir.create(results_dir, showWarnings = FALSE)
 
 if (location == "local"){
-  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/NBSeq_Results.xlsx'
-  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
 }
 
 if (location == "server"){
-  compare_file <- '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/NBSeq_Results.xlsx'
   TR_removed_variant <- '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
   genedb_file <- "/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list_GenCC_20251125.txt"
 }
@@ -91,12 +85,6 @@ compound.heterozygous.res <- function(df){
 	
 	# function for infer the compound heterozygous origin
 	infer_origin <- function(father, mother) {
-	  # if (length(father) == 0 || length(mother) == 0) {
-	  #   return("Error, please check again")
-	  # }
-	  # if (is.na(father) || is.na(mother)) {
-	  #   return("Error, please check again")
-	  # }
 	  if (father %in% c("0/1", "1/0", "1|1", "1/1", "1|0", "0|1") & mother %in% c("0/0","0|0")){
 	    return("Father")
 	  }else if (father %in% c("1/1","1|1") & mother %in% c("0/1", "1/0")){
@@ -141,24 +129,44 @@ compound.heterozygous.res <- function(df){
       .groups = "drop"
     ) 
   
-  brief.com.het2 <- brief.com.het1 %>% 
-    left_join(., ch.df) %>% select(-origins) %>% filter(Compound_heterozygous %in% c("Yes","Uncertained")) 
+  if(nrow(ch.df) == 0){
+    df1 = data.frame()
+    return(df1)
+  }else{
+    brief.com.het2 <- brief.com.het1 %>% 
+      left_join(., ch.df) %>% select(-origins) %>% 
+      filter(Compound_heterozygous %in% c("Yes","Uncertained","Uncertained chrX phenotype"))
+    df <- df %>% left_join(., ch.df.all %>% select(Genes, variant_info, all_of(kid_col1)) %>% unique(), by = c("Genes","variant_info")) 
   
-  df1 <- df %>% 
-    left_join(., brief.com.het2 %>% select(-ClinVar_CLNSIG, -acmg_classification)) %>% unique() 
-
-	return(df1)
+    brief.com.het2 <- brief.com.het1 %>% 
+      left_join(., ch.df) %>% select(-origins) %>% filter(Compound_heterozygous %in% c("Yes","Uncertained","Uncertained chrX phenotype")) 
+    
+    df1 <- df %>% 
+      left_join(., brief.com.het2 %>% select(-ClinVar_CLNSIG, -acmg_classification)) %>% unique() %>% 
+      filter(Compound_heterozygous %in% c("Yes","Uncertained","Uncertained chrX phenotype"))
+  
+  	return(df1)
+  }
 }
 
 # Function 2: Potential recessive disease on the offspring 
 carrier.couple <- function(df){
   df.ch <- compound.heterozygous.res(df)
-  plp.carrier <- df.ch %>% 
-    filter(grepl("Pathogenic|Likely pathogenic",ClinVar_CLNSIG) & 
-           grepl("Pathogenic|Likely pathogenic",acmg_classification) |
-           !is.na(Compound_heterozygous)) %>%  
-    filter(Inheritance %in% c("AR", "XLR")) %>% unique()
   
+  if (nrow(df.ch) > 0) {
+    df <- full_join(df, df.ch)
+    plp.carrier <- df %>% 
+      filter((grepl("Pathogenic|Likely pathogenic",ClinVar_CLNSIG) & 
+                grepl("Pathogenic|Likely pathogenic",acmg_classification)) |
+               !is.na(Compound_heterozygous)) %>%  
+      filter(Inheritance %in% c("AR", "XLR")) %>% unique()
+  }else{
+    plp.carrier <- df %>% 
+      filter((grepl("Pathogenic|Likely pathogenic",ClinVar_CLNSIG) & 
+                grepl("Pathogenic|Likely pathogenic",acmg_classification))) %>%  
+      filter(Inheritance %in% c("AR", "XLR")) %>% unique()
+  }
+
   if(nrow(plp.carrier) == 0){
     return(plp.carrier)
   }else{

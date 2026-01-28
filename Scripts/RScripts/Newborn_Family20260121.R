@@ -25,7 +25,6 @@ genelist <- args[5]
 results_dir <- file.path(output_dir, "Results")
 dir.create(results_dir, showWarnings = FALSE)
 
-
 if (location == "local"){
   compare_file <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/NBSeq_Results.xlsx'
   TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
@@ -137,8 +136,6 @@ compound.heterozygous.res <- function(df){
 	  }
 	}
 	
-	ch.df.all <-data.frame(Genes = character(), variant_info = character(), stringsAsFactors = FALSE)
-
 	for ( i in kid_genotype_col){
 	  kid_col <- colnames(df)[i]
 	  kid_origin_col <- gsub("Genotype","Origin",kid_col)
@@ -171,18 +168,15 @@ compound.heterozygous.res <- function(df){
 	  if(nrow(ch.df) == 0){
 	    ch.df = data.frame(origin = NA, Compound_heterozygous = NA) %>% 
 	      rename(!!kid_origin_col := origin, !!kid_ch_col := Compound_heterozygous)
-	    brief.com.het2 <- cbind(brief.com.het1, ch.df)
-	    ch.df.all <- full_join(ch.df.all, brief.com.het2)
-	    kid_col1 = colnames(ch.df.all)[grep("Origin|Compound", colnames(ch.df.all))]
-	    df <- df %>% left_join(., ch.df.all %>% select(Genes, variant_info, all_of(kid_col1)) %>% unique(), by = c("Genes","variant_info")) 
+	    df <- cbind(df, ch.df)
 	  }else{
 	    brief.com.het2 <- brief.com.het1 %>% 
 	      left_join(., ch.df) %>% select(-origins) %>% 
 	      filter(Compound_heterozygous %in% c("Yes","Uncertained","Uncertained chrX phenotype")) %>% 
 	      rename(!!kid_origin_col := origin, !!kid_ch_col := Compound_heterozygous)
-	    ch.df.all <- full_join(ch.df.all, brief.com.het2, by = c("Genes","variant_info"))
-	    kid_col1 = colnames(ch.df.all)[grep("Origin|Compound", colnames(ch.df.all))]
-	    df <- df %>% left_join(., ch.df.all %>% select(Genes, variant_info, all_of(kid_col1)) %>% unique(), by = c("Genes","variant_info")) 
+	    kid_col_all = colnames(brief.com.het2)[grep("Origin|Compound", colnames(brief.com.het2))]
+	    df <- df %>% 
+	      left_join(., brief.com.het2 %>% select(Genes, variant_info, all_of(kid_col_all)) %>% unique(), by = c("Genes","variant_info"))
 	  }
 	}
 	
@@ -191,7 +185,6 @@ compound.heterozygous.res <- function(df){
 	df <- df %>% 
 	  filter(if_any(all_of(kid_compoundhet_col),
 	                ~ .x %in% c("Yes", "Uncertained","Uncertained chrX phenotype")))
-	
 	return(df)
 }
 
@@ -263,13 +256,20 @@ positive.monogenic.plp.family <- function(df, ped){
   }
   
   # merge two results together
+  kid_org_compoundhet_col <- colnames(result.ch)[grep("Origin|Compound_heterozygous",colnames(result.ch))]
+  plp.monogenic[, kid_org_compoundhet_col] <- NA
   plp.monogenic.final <- rbind(plp.monogenic, result.ch) %>% unique()
   
   if(nrow(plp.monogenic.final) > 0 ){
+    kid_compoundhet_col <- colnames(result.ch)[grep("Compound_heterozygous",colnames(result.ch))]
+    kid_genotype_cols <- colnames(df)[grep("Kid.*Genotype", colnames(df))]
     plp.monogenic.final <- plp.monogenic.final %>% 
+      filter(grepl("Pathogenic|Likely_pathogenic",ClinVar_CLNSIG) & grepl("Pathogenic|Likely_pathogenic",acmg_classification) |
+            if_any(all_of(kid_compoundhet_col),
+                     ~ .x %in% c("Yes", "Uncertained","Uncertained chrX phenotype"))) %>% 
       mutate(HGVSc = gsub("^.*:","",HGVSc), HGVSp = gsub("^.*:","",HGVSp)) %>% 
       select(Disease, Inheritance, Genes, X.CHROM, POS, REF, ALT, HGVSc, HGVSp, ClinVar_CLNSIG, acmg_classification, 
-             IMPACT, MAX_AF, FatherGenotype, MotherGenotype, all_of(kid_genotype_cols), all_of(kid_ch_cols)) %>% unique() %>% 
+             IMPACT, MAX_AF, FatherGenotype, MotherGenotype, all_of(kid_genotype_cols), all_of(kid_compoundhet_col)) %>% unique() %>% 
       left_join(., compare_positive %>% 
                   select(Reported.Disease, `Results from Other NBSeq Projects`, Genes, Transcript) %>% unique(),
                 by = c("Genes", "HGVSc" = "Transcript")) %>% 
