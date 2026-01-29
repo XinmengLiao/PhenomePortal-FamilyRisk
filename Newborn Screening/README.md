@@ -18,7 +18,7 @@ For both carrier and newborn screening, add options for users to select the gene
 2. Users could choose one or more screening panels from: 
     Newborn screening projects: ACMGv3.3, BabySeq_GroupA, BabySeq_GroupB, EarlyCheck_Group2, EarlyCheck_Group1, EarlyCheck_Group3, EarlyCheck_Group4, Genomic101, NBScreening, BabyScreen+, BabyDetect, Guardian_Group1, Guardian_Group2 \
     Expanded carrier screening list: ACMG_Carrier_Tier_1, ACMG_Carrier_Tier_2, ACMG_Carrier_Tier_3, ACMG_Carrier_Tier_4, ACMG_Carrier_Outside_gnomAD
-3. Users could upload their own screening list in the format of: \
+3. Users could upload their own screening list in the `.txt` format of: \
     `Genes\tDisease\tInheritance\tMIM\tDisorder_Group\tProject`
     If users generate the screneing list from FamilyRisk knowledgebase, the list is already in the right format and ready to be uploaded.
 
