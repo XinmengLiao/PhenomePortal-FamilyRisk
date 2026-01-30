@@ -25,3 +25,7 @@ For both carrier and newborn screening, add options for users to select the gene
 
 ### --- 4 ---
 "Help & Support" section for tutorial documentation and video. 
+
+### --- 5 --- 
+Data privacy notes when uploading the VCF as OncoRisk \
+<img width="451" height="248" alt="image" src="https://github.com/user-attachments/assets/7f530dc7-f7ee-42f3-b570-1ac0aa6ead48" />
