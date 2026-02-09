@@ -14,5 +14,6 @@ Log: 20260209
 5. In the description for "Gene-disease panel" of Individual-level Analysis, please change " If omitted, the script default will be used." to "If omitted, NBScreening panel will be used for newborn screening, and ACMG-ECS will be used for carrier screening."
 6. In the description for "Run genotype imputation" of Individual-level Analysis, please change "Recommended for WGS with 0/0 genotypes." to "Recommended for WGS with missing genotypes."
 7. In the description for "Run genotype imputation" of Family-level Newborn screening, instead of the second VCF file, users should be able to upload more than two VCF files for merging, since some families have more than three members. Could we change the function to 1) upload merged family VCF; or 2) upload multiple unmerged VCF files.
-8. We need to design the reports for individual- and family-level carrier and newborn screenings.
-9. Add one more function for Family-level newborn screening, where users could select specific variants and create the pedigree plots. Scripts are available at ``.
+8. If we do not need JSON file for PGx, we can remove `-reporterJson` in pharmcat step B in each bash script. 
+9. We need to design the reports for individual- and family-level carrier and newborn screenings.
+10. Add one more function for Family-level newborn screening, where users could select specific variants and create the pedigree plots. Scripts are available at ``.
