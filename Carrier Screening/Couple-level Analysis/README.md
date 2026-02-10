@@ -17,25 +17,9 @@ bash $Scripts/FamilyRisk_family.sh --carrier \
 ### UI design
 Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/Results`
 It will be nice if the following contents could be included in the webpage:
-1) Complete results of filtered variants. 
-2) Couple details and variant summary.
-3) Potential recessive disease that will be inherited to the offsprings.
-4) PGx information.
-5) PGS information. 
-
-#### 1) Complete result table.
-`rwgsF1.txt`
-
-#### 2) Couple details and variant summary.
-1. The table of family details: `family_information.txt`
-2. The table of variant summary: `variant_summary.txt`
-
-#### 3) Potential recessive disease that will be inherited to the offspring
-1. Table of potential recessive diseases: `carrier_screening_result_couple.txt`
-* Note: Only diseases caused by ClinVar **AND** ACMG P/LP variants will be shown as default. 
-
-#### 4) PGx information
-Results from PharmCat in HTML and/or JSON file.
-
-#### 5) PGS information
-Results generated from pgsc_calc: `PGS_Scores/rwgsF1_popsimilarity.txt`, `PGS_Scores/rwgsF1_popsimilarity.txt`
+1) Couple Details: `family_information.txt`
+2) Variant Summary: `variant_summary.txt`
+3) Variant Details: `rwgsF1.txt`
+4) Potential recessive disease that will be inherited to the offspring (ClinVar **AND** ACMG P/LP variants):  `carrier_screening_result_couple.txt`
+4) PGx information: report for each individual in `PGx_Reports/`
+5) PGS information: (a) scores: `PGS_Scores/cohort_PGS.txt`; (b) report: `PGS_Scores/report.html`; (c) Density plots: `PGS_Znorm1_DensityPlot.png` and `PGS_Znorm2_DensityPlot.png`

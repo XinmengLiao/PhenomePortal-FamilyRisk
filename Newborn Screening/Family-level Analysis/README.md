@@ -17,37 +17,14 @@ bash $Scripts/FamilyRisk_family.sh --newborn \
 ### UI design
 Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-newborn-rwgs1/Results`
 It will be nice if the following contents could be included in the webpage:
-1) Complete results of filtered variants. 
-2) Family details and variant summary.
-3) Screen-positive rare diseases and carrier status.
-4) Pedigree plots for the variants of screen-positive diseases. 
-5) Pedigree plot generator for varant of interest.
-6) PGx information: `PGS_Reports/`
-7) PGS information.
-
-#### 1) Complete result table.
-`rwgsF1.txt`
-
-#### 2) Family details and variant summary.
-1. The table of family details: `family_information.txt`
-2. The table of variant summary: `variant_summary.txt`
-
-#### 3) Screen-positive rare diseases and carrier status
-1. Table of screen-positive rare disease: `carrier_status_results.txt`
-2. Table of carrier status: `monogenic_positive_results.txt`
-* Note: Only diseases caused by ClinVar **AND** ACMG P/LP variants will be shown as default. 
-
-#### 4) Pedigree plots for the variants of screen-positive diseases.
-The plot will be automatical generated: `F1_IDH3A_c.802G>A_pedigree_plot.png`
-
-#### 5) Pedigree plot generator for varant of interest
+1) Family details: `family_information.txt`
+2) Variant summary: `variant_summary.txt`
+3) Variant Details: `rwgsF1.txt`
+4) Screen-positive monogenic rare diseases (ClinVar **AND** ACMG P/LP variants): `monogenic_positive_results.txt`
+5) Disease carrier status (ClinVar **AND** ACMG P/LP variants): `carrier_status_results.txt`
+6) Pedigree plots for the variants of screen-positive diseases: Nothing for this example. 
+7) Pedigree plot generator for varant of interest: `F1_IDH3A_c.802G>A_pedigree_plot.png`
 Users could choose their variant of interest to generate additional pedigree plot showing the inheritance paths. 
-Script for this function:
-
-#### 6) PGx information
-Results from PharmCat in HTML and/or JSON file. Have not done yet. 
-
-#### 7) PGS information
-1. Table of the family PGS scores: `cohort_PGS.txt`
-2. Density plot compared with the reference populations: `PGS_Znorm1_DensityPlot.png` and `PGS_Znorm2_DensityPlot.png`
-3. Report for the PGS score: `report.html`
+Script for this function: `/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts/RScripts/Pedigree_Analysis_subset20260121.R`
+8) PGx report: Every single html file. `PGx_Reports/rwgsF1_biallelic_nodup_pass.NW_001_C.report.html`, `PGx_Reports/rwgsF1_biallelic_nodup_pass.NW_001_F.report.html`, `PGx_Reports/rwgsF1_biallelic_nodup_pass.NW_001_M.report.html`.
+9) PGS information: (a) scores: `PRS_Scores/cohort.txt`; (b) report: `PGS_Scores/report.html`; (c) Densityplots: `PRS_Scores/PGS_Znorm1_DensityPlot.png` and `PRS_Scores/PGS_Znorm2_DensityPlot.png`

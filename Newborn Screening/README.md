@@ -17,3 +17,16 @@ Log: 20260209
 8. If we do not need JSON file for PGx, we can remove `-reporterJson` in pharmcat step B in each bash script. 
 9. We need to design the reports for individual- and family-level carrier and newborn screenings.
 10. Add one more function for Family-level newborn screening, where users could select specific variants and create the pedigree plots. Scripts are available at ``.
+
+### Interface and Reports for Demos 
+1. Individual-level newborn screening (SNVs and INDELs) + Reporting: https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/tree/main/Newborn%20Screening/Individual-level%20Analysis
+2. Individual-level newborn screening (CNVs and SVs):https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/tree/main/Newborn%20Screening/Struactural-Variant%20Analysis
+3. Family-level newborn sceening + Reporting:https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/tree/main/Newborn%20Screening/Family-level%20Analysis
+4. Cohort-level newborn screening: https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/tree/main/Newborn%20Screening/Population-level%20Analysis
+5. Family-level carrier screening: https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/tree/main/Carrier%20Screening/Couple-level%20Analysis
+
+### Reporting (need to design later)
+1. Individual-level newborn screening
+2. Individual-level carrier screening 
+3. Family-level newborn screening 
+4. Family-level carrier screening 

@@ -28,32 +28,14 @@ bash Scripts/FamilyRisk_cohort1.sh \
 
 ### UI Design
 Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/Results`
-The whole result page could be devided into 6 parts:
-1) Complete results of filtered variants.
-2) Cohort statistics and Variant statistics.
-3) Result Summary: Screen-positive and Carrier status.
-4) Inhouse Allele frequency for all filtered variants.
-5) PGS density plot and the scores for all individual. (link out to the HTML file).
-
-#### 1) Complete result table.
-`newborn103.txt` 
-
-#### 2) Cohort statistics and Variant statistics
-Just show the table of: `Cohort_summary.txt`
-
-#### 3) Result Summary: Screen-positive and Carrier status
-* Note: No matter what is the screening criteria, all the screen-positive results shown in the webpage refers to the diseases that caused by ClinVar AND ACMG P/lP variants. This is the default display and the barplot content of `plp_var_stat.txt` can not be changed by the users. \
-
-The tables: \
-  A) screen-positive monogenic result: `monogenic_positive_results.txt` \
-  B) Carrier status results: `carrier_status_results.txt` \
-  C) Table and barplot showing the distribution of disease ontology: `ontology_stat.txt`
-
-#### 4) Inhouse Allele frequency for all filtered variants
-A table showing all the filtered variants, with allele frequency: `inhouse_allele_frequency.txt`
+The whole result page could be devided into these subpanels:
+1) Cohort Information and Variant Summary: `Cohort_summary.txt`
+2) Variant Details: `newborn103.txt` 
+3) Variant Statistics: `plp_var_stat.txt`
+4) Disease Ontology Statistics: `ontology_stat.txt`
+5) Screen-positive monogenic rare disease (ClinVar **AND** ACMG P/lP variants): `monogenic_positive_results.txt`
+6) Disease Carrier status (ClinVar **AND** ACMG P/lP variants): `carrier_status_results.txt`
+7) Inhouse Allele frequency for all filtered variants: `inhouse_allele_frequency.txt`
 * Note: variants on Chromosome X and Y are calculated in coincident with the gender file. 
-
-#### 5) PGS density plot and the scores for all individual
-A) Table of PGS scores: `cohort_PGS.txt` \
-B) Density plot compared with other populations: `PGS_Znorm1_DensityPlot.png` and `PGS_Znorm2_DensityPlot.png` \
-C) Link out to the PGS-Catalog HTML file: `report.html`
+8) PGS scores: (a) scores: `PGx_Scores/newborn103/score/cohort_PGS.txt`; (b) reports: `PGx_Scores/newborn103/score/report.html`; (c) Density plot: `PGx_Scores/newborn103/score/PGS_Znorm1_DensityPlot.png` and `PGx_Scores/newborn103/score/PGS_Znorm2_DensityPlot.png`.
+9) PGx information: 103 individual reports in `PGx_Reports`.

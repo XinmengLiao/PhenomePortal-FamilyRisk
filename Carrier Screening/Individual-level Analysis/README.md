@@ -13,8 +13,7 @@ bash $Scripts/FamilyRisk_single.sh --carrier \
 
 ### UI design
 Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-carrier/Results`
-The UI could be similar to the original newborn screening in XOmics. Functions such as selecting the variants, genes, and add comments and suggestions could be included in the web page. 
-It would be better if the following details could be presented: 
-1) Complete results of filtered variants: `rwgs1_mother.txt`
-1) Potential recessive disease that will be inherited to offsprings: `carrier_screening_result_single.txt`
-2) PGx information: `PGx_Reports`
+The UI design could be similar to Individual-level Newborn Screening. 
+1) Variant Details: `rwgs1_mother.txt`
+2) Potential recessive disease that will be inherited to offsprings (ClinVar **AND** ACMG pathogenic variants): `carrier_screening_result_single.txt`
+3) PGx information: `PGx_Reports/rwgs1_mother_biallelic_nodup_pass.report.html`
