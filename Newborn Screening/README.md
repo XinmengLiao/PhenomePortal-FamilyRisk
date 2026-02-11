@@ -1,3 +1,20 @@
+Log: 20260211
+
+### Updates needed for results interface
+1.For PGx and PGS html reports, I can not jump to any hyperlink within the report. Error shows "You need to enable JavaScript to run this app." \
+<img width="383" height="89" alt="image" src="https://github.com/user-attachments/assets/0a3924ff-7f89-49a9-89df-992ceaf08e7f" /> \
+<br>
+2. For PGS section, we don't need to show the json and version files. Keep the other files. \
+<img width="350" height="331" alt="image" src="https://github.com/user-attachments/assets/aacc0fb2-d897-452e-a7f6-40b622272f76" /> \
+<br>
+3. We don't need to show "Other Files". \
+<img width="344" height="126" alt="image" src="https://github.com/user-attachments/assets/ba429e21-7a0f-40e4-ba91-dfa9e538b15c" />
+
+
+<br>
+<br>
+
+
 Log: 20260209
 
 ### Roadmap for endpoint pipeline
