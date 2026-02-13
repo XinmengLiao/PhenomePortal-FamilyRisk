@@ -1,3 +1,21 @@
+Log: 20260213
+
+### Updates needed for more functions
+1. For all modules that generate PDF report, add a function where users could select any variant of interest from "Variant Details" and added it to the final PDF report.
+2. Add the function to generate pedigree plot for any variant of interest from "Variant Details" in the family-level carrier/newborn screening analysis.
+   - R script for generating additional pedigree plot: `/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts/RScripts/Pedigree_Analysis_subset20260121.R`. Here, the input is txt/tsv file of selected variant separted by line. Input file example could be found in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-newborn-rwgs1/variant_info.txt`. Every variant will have one plot generated in the output directory.
+   - Command for running this Rscript: `Rscript Pedigree_Analysis_subset20260121.R $INPUT_SAMPLE $OUTPUT_DIR/${INPUT_SAMPLE}.txt $PED $OUTPUT_DIR $VAR_FILE`. Please also see the arguments in Rscript. These variables are same as `FamilyRisk_family.sh`, only $VAR_FILE is newly defined.
+   - The story for this function is: In the family-level newborn screening on the trio family, we applied the customized gene-disease screening list where IDH3A-Mitochondrial encephalopathy is included (`/mnt/nas/Genomics/Genome/FamilyRisk/examples/rwgsF1/customized_genedb.txt`). In the output results, though none of the rare monogenic diseases are screened positively, clinicians find out the IDH3A c.802G>A p.Gly268Arg (chr15_78165014_G_A) may be the pathogenic variant leading to clinical phenotypes. Thus, clinician manually selected this variant from "Variant Details" and generated extra pedigree plot for this variant. Eventually, this variant is selected to be included in the final pdf report together with the pedigree plot. None of the disease carrier status was found.
+   - Plot for this IDH3A variant is in: `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-newborn-rwgs1/Results/F1_IDH3A_c.802G>A_pedigree_plot.png`
+3. Move FamilyRisk Database from Scilife server to our own server. Src in docker: `xinmengliao/familyriskdatabase` or `docker run xinmengliao/familyriskdatabase:v1`. 
+4. Allow email for login/register to store personal data?
+
+### Extra work
+1. Use FamilyRisk to conduct carrier and newborn screening for two more families to test the pipeline and see if it could provide true results. 
+
+<br>
+<br>
+
 Log: 20260211
 
 ### Updates needed for results interface
