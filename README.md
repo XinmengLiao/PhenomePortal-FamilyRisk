@@ -63,7 +63,7 @@ This facilitates translation from genomic data to actionable clinical documentat
 
 ### 📘 Tutorials
 - The full tutorial documentation could be found: 
-   - [Documentataion]
+   - [Documentataion](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Home/)
    - [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki)
 - The step-by-step video tutorial could be found:
    - [Video]
@@ -72,10 +72,11 @@ Each function of FamilyRisk is documented with step-by-step Markdown guides:
 
 | Function | Description | Documentation | Wiki 
 |:-------|:-------------|:----------| ---- 
-| **Newborn Screening-Individual** | Individual-level newborn screening. Identify potential monogenic rare diseases and disease carrier status. | [Documentation](https://xinmengliao.github.io/PhenomePortal-VarXOmics/Functions/Small%20Variant%20Query/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-VarXOmics/wiki/Small-Variant-Query)
-| **Newborn Screening-Family** | Family-level newborn screening. Identify potential monogenic rare diseases and disease carrier status in the newborns. Segregation analysis to visualize variant inheritance patterns. | [Documentation](https://xinmengliao.github.io/PhenomePortal-VarXOmics/Functions/CNV%20and%20SV%20Query/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-VarXOmics/wiki/CNV-and-SV-Query)
-| **Newborn Screening-Population** | Cohort-level newborn screening. Identify regional prevalent monogenic rare diseases and disease carrier status. Calculate cohort-level allele frequency. | [Documentation](https://xinmengliao.github.io/PhenomePortal-VarXOmics/Functions/Gene%20Query/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-VarXOmics/wiki/Gene-Query)
-| **Newborn Screening-CNV/SV** | Annotate individual-level copy number variants and structural variants in the newborn. | [Documentation]() | [Wiki]()
-| **Carrier Screening-Individual** | Individual-level carrier screening. Identify potential recessive diseases that might inherit by the offspring. | [Documentation]() | [Wiki]()
-| **Carrier Screening-Family** | Couple-level carrier screening. Identify potential recessive diseases that might inherit by the offspring. | [Documentation]() | [Wiki]()
+| **Database** | Integrated knowledge of carrier and newborn screening projects, gene panels, and clinical outcomes. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Database/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Database)
+| **Newborn Screening-Individual** | Individual-level newborn screening. Identify potential monogenic rare diseases and disease carrier status. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Newborn-Screening-%E2%80%90-Individual/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Newborn-Screening-%E2%80%90-Individual)
+| **Newborn Screening-Family** | Family-level newborn screening. Identify potential monogenic rare diseases and disease carrier status in the newborns. Segregation analysis to visualize variant inheritance patterns. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Newborn-Screening-%E2%80%90-Family/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Newborn-Screening-%E2%80%90-Family)
+| **Newborn Screening-Population** | Cohort-level newborn screening. Identify regional prevalent monogenic rare diseases and disease carrier status. Calculate cohort-level allele frequency. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Newborn-Screening-%E2%80%90-Population/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Newborn-Screening-%E2%80%90-Population)
+| **Newborn Screening-CNV/SV** | Annotate individual-level copy number variants and structural variants in the newborn. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Newborn-Screening-%E2%80%90-CNV-%26-SV/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Newborn-Screening-%E2%80%90-CNV-&-SV)
+| **Carrier Screening-Individual** | Individual-level carrier screening. Identify potential recessive diseases that might inherit by the offspring. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Carrier-Screening-%E2%80%90-Individual/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Carrier-Screening-%E2%80%90-Individual)
+| **Carrier Screening-Family** | Couple-level carrier screening. Identify potential recessive diseases that might inherit by the offspring. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Carrier-Screening-%E2%80%90-Family/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Carrier-Screening-%E2%80%90-Family)
 
