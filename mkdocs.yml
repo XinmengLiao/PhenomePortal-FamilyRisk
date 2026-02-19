@@ -1,0 +1,51 @@
+site_name: FamilyRisk Documentation
+site_url: https://xinmengliao.github.io/PhenomePortal-FamilyRisk/
+repo_url: https://github.com/XinmengLiao/PhenomePortal-FamilyRisk
+repo_name: XinmengLiao/PhenomePortal-FamilyRisk
+site_author: Xinmeng Liao
+copyright: "© 2026 FamilyRisk Team"
+
+theme:
+  name: material
+  logo: images/FamilyRisk_Dark.logo.png
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - content.code.copy
+
+# ✅ no need for docs_dir — MkDocs uses 'docs/' by default
+
+nav:
+  - Home: Home.md
+  - Database: Database.md
+  - Tutorials:
+      - Newborn Screening - Individual: Newborn-Screening-‐-Individual.md
+      - Newborn Screening - Family: Newborn-Screening-‐-Family.md
+      - Newborn Screening - Population: Newborn-Screening-‐-Population.md
+      - Newborn Screening - CNV & SV: Newborn-Screening-‐-CNV-&-SV.md
+      - Carrier Screening - Individual: Carrier-Screening-‐-Individual.md
+      - Carrier Screening - Family: Carrier-Screening-‐-Family.md     
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - tables
+  - fenced_code
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - footnotes
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      fallback_to_build_date: true
