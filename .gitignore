@@ -4,3 +4,4 @@ pharmcat.log
 .nextflow/
 work/
 .nextflow.log*
+site/
