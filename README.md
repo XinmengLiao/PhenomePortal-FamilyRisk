@@ -21,7 +21,7 @@ FamilyRisk integrates curated knowledge on screening strategies, gene–disease 
 
 The database aggregates evidence from seven established newborn sequencing initiatives (BabySeq, BabyScreen+, BabyDetect, GUARDIAN, EarlyCheck, Genomics 101, NBScreening), ACMG Secondary Findings, and ACMG Expanded Carrier Screening. 
 <div align='center'>
-<img width="65%" height="610" alt="image" src="https://github.com/user-attachments/assets/c2ff8e49-444d-4c5d-8d96-81c9864a36f1" />
+<img width="75%" height="610" alt="image" src="https://github.com/user-attachments/assets/c2ff8e49-444d-4c5d-8d96-81c9864a36f1" />
 </div>
 
 
