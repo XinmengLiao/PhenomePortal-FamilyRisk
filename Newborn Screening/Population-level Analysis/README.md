@@ -2,12 +2,12 @@
 ### Command for anlaysis
 ```bash
 # for 103 TR newborns
-Scripts="/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts"
+Scripts="/PhenomePortal-FamilyRisk/Scripts"
 bash $Scripts/FamilyRisk_cohort.sh \
 	-i newborn103 \
-	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/newborn103_merged.vcf.gz \
-	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort \
-	--sample-metadata /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/newborn103gender.txt \
+	-v /PhenomePortal-FamilyRisk/examples20260119/TRcohort/newborn103_merged.vcf.gz \
+	-o /PhenomePortal-FamilyRisk/examples20260119/TRcohort \
+	--sample-metadata /PhenomePortal-FamilyRisk/examples20260119/TRcohort/newborn103gender.txt \
 	--genome GRCH38 --only-pass yes --genedb NBScreening \
 	--only-clinvar yes --clinvar Pathogenic,Likely_pathognic \
   	--fork 20 --threads 20 \
@@ -16,9 +16,9 @@ bash $Scripts/FamilyRisk_cohort.sh \
 # smaller test cohort, four newborns were extracted from the merged file. 
 bash Scripts/FamilyRisk_cohort1.sh \
 	-i cohort_small \
-	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/cohort_small_biallelic_nodup_pass.vcf.gz \
-	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort \
-	--sample-metadata /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/cohort_small_gender.txt \
+	-v /PhenomePortal-FamilyRisk/examples20260119/TRcohort/cohort_small_biallelic_nodup_pass.vcf.gz \
+	-o /PhenomePortal-FamilyRisk/examples20260119/TRcohort \
+	--sample-metadata /PhenomePortal-FamilyRisk/examples20260119/TRcohort/cohort_small_gender.txt \
 	--genome GRCH38 --only-pass yes --genedb NBScreening \
 	--only-clinvar yes --clinvar Pathogenic,Likely_pathognic --af-clinvar 0.05 \
   	--fork 20 --threads 20 \
@@ -27,7 +27,7 @@ bash Scripts/FamilyRisk_cohort1.sh \
 
 
 ### UI Design
-Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/TRcohort/Results`
+Results are stored in `/PhenomePortal-FamilyRisk/examples20260119/TRcohort/Results`
 The whole result page could be devided into these subpanels:
 1) Cohort Information and Variant Summary: `Cohort_summary.txt`
 2) Variant Details: `newborn103.txt` 

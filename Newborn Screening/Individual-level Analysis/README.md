@@ -1,11 +1,11 @@
 ## Newbornx-Individual
 ### Command for analysis 
 ```bash
-Scripts="/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts"
+Scripts="/PhenomePortal-FamilyRisk/Scripts"
 bash $Scripts/FamilyRisk_single.sh --newborn \
 	-i rwgs1_kid \
-	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-rwgs1Kid/RapidWGS_001_C.hard-filtered.vcf.gz \
-	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-rwgs1Kid \
+	-v /PhenomePortal-FamilyRisk/examples20260119/single-newborn-rwgs1Kid/RapidWGS_001_C.hard-filtered.vcf.gz \
+	-o /PhenomePortal-FamilyRisk/examples20260119/single-newborn-rwgs1Kid \
 	--genome GRCH38 --only-pass yes --gender Female --genedb NBScreening --run-pgx yes \
   	--fork 20 --threads 20
 
@@ -13,8 +13,8 @@ bash $Scripts/FamilyRisk_single.sh --newborn \
 # If run PGS, must avoid using underscore in naming files and folders
 bash $Scripts/FamilyRisk_single.sh --newborn \
 	-i rwgs1_kid \
-	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-rwgs1Kid/RapidWGS_001_C.hard-filtered.vcf.gz \
-	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-rwgs1Kid \
+	-v /PhenomePortal-FamilyRisk/examples20260119/single-newborn-rwgs1Kid/RapidWGS_001_C.hard-filtered.vcf.gz \
+	-o /PhenomePortal-FamilyRisk/examples20260119/single-newborn-rwgs1Kid \
 	--genome GRCH38 --only-pass yes --gender Female --genedb NBScreening --run-pgx yes \
   	--fork 20 --threads 20 \
   	--run-prs yes --run-imputation yes --pgsid PGS002760
@@ -22,8 +22,8 @@ bash $Scripts/FamilyRisk_single.sh --newborn \
 # single - newborn with PGS (P0064_1002)
 bash Scripts/FamilyRisk_single.sh --newborn \
 	-i P0064_1002 \
-	-v /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-1002/P0064_1002.vcf.gz \
-	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-1002 \
+	-v /PhenomePortal-FamilyRisk/examples20260119/single-newborn-1002/P0064_1002.vcf.gz \
+	-o /PhenomePortal-FamilyRisk/examples20260119/single-newborn-1002 \
 	--genome GRCH38 --only-pass yes --gender Male --genedb NBScreening --af-clinvar 0.05 --only-clinvar yes --clinvar Pathogenic,Likely_pathognic \
   	--fork 20 --threads 20 \
   	--run-prs yes --run-imputation yes --pgsid PGS001893 --run-pgx yes
@@ -31,7 +31,7 @@ bash Scripts/FamilyRisk_single.sh --newborn \
 
 ## UI design
 #### P0064_1002 is the example. 
-Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/single-newborn-1002/Results`
+Results are stored in `/PhenomePortal-FamilyRisk/examples20260119/single-newborn-1002/Results`
 The UI could be similar to VarXOmics. Each table could be in a separated subpanel. The reporting system could be simiarl to XOmics report generating function. Newborn information, positive screening results, customized screening results, and comments & suggestions will be included in the report.  
 Tables for subpanels：
 1) Sample and variant summary: `general_summary.txt`

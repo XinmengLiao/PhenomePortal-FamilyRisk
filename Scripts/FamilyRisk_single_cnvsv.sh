@@ -4,7 +4,7 @@
 
 
 # Default values
-ANNOTSV='/mnt/nas/Genomics/VarXOmics/tools/AnnotSV/bin/AnnotSV'
+ANNOTSV='/PhenomePortal-FamilyRisk/tools/AnnotSV/bin/AnnotSV'
 
 # Function to display usage
 usage() {

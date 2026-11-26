@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # scripts for steamline the whole pipeline
-SCRIPTS='/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts'
+SCRIPTS='/PhenomePortal-FamilyRisk/Scripts'
 
 # Function to display usage
 usage() {
@@ -399,10 +399,10 @@ if [[ "$RUNPGX" == "no" ]]; then
     echo "Skipping PGx analysis as --run-pgx is not set to 'yes'."
     exit 0
 else
-    pharmcat="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
-    pharmcat_preprocessor="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
-    preprocessor_ref="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/reference.fna.bgz"
-    preprocessor_position="/mnt/nas/Genomics/Genome/FamilyRisk/tools/pharmcat/pharmcat_positions_3.1.1.vcf.bgz"
+    pharmcat="/PhenomePortal-FamilyRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
+    pharmcat_preprocessor="/PhenomePortal-FamilyRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
+    preprocessor_ref="/PhenomePortal-FamilyRisk/tools/pharmcat/reference.fna.bgz"
+    preprocessor_position="/PhenomePortal-FamilyRisk/tools/pharmcat/pharmcat_positions_3.1.1.vcf.bgz"
 
     PHARMCAT_PREPROCESSED_VCF="${OUTPUT_DIR}/${INPUT_SAMPLE}_biallelic_nodup_pass.preprocessed.vcf.bgz"
     echo $PHARMCAT_PREPROCESSED_VCF

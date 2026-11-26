@@ -28,15 +28,15 @@ dir.create(results_dir, showWarnings = FALSE)
 
 
 if (location == "local"){
-  compare_file <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/NBSeq_Results.xlsx'
-  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+  compare_file <- '/PhenomePortal-FamilyRisk/Datasets/NBSeq_Results.xlsx'
+  TR_removed_variant <- '/PhenomePortal-FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/PhenomePortal-FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
 }
 
 if (location == "server"){
-  compare_file <- '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/NBSeq_Results.xlsx'
-  TR_removed_variant <- '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list_GenCC_20251125.txt"
+  compare_file <- '/PhenomePortal-FamilyRisk/Datasets/NBSeq_Results.xlsx'
+  TR_removed_variant <- '/PhenomePortal-FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/PhenomePortal-FamilyRisk/Datasets/Preset_screening_list_GenCC_20251125.txt"
 }
 
 

@@ -63,7 +63,7 @@ config = {
         "ped_file": sys.argv[3],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_NewbornRisk/Datasets/genelists/Preset_screening_list20251125.txt'
+        'screening_list': '/PhenomePortal-FamilyRisk/Datasets/genelists/Preset_screening_list20251125.txt'
     },
     "sysmed": {
         "fileName": sys.argv[1],
@@ -71,7 +71,7 @@ config = {
         "ped_file": sys.argv[3],
         'genedb_file': sys.argv[19],
         'customized_genedb_file': sys.argv[20],
-        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list20251125.txt'
+        'screening_list': '/PhenomePortal-FamilyRisk/Datasets/Preset_screening_list20251125.txt'
     }
 }
 
@@ -332,8 +332,8 @@ try:
         genome='hg38',
         use_ensembl=False,
         use_refseq=True,
-        username="xinmeng.liao@scilifelab.se",
-        api_key="ak-NUOZZHfs8siGFMDlXyfqgbFNP8HJHt64",
+        username="[username]",
+        api_key="[userAPI]",
         use_netrc=False,
         endpoint_url='https://api.genebe.net/cloud/api-public/v1/variants',
         flatten_consequences=False,

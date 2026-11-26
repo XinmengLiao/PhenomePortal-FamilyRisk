@@ -3,19 +3,19 @@
 ```bash
 # family - carrier with PGS
 # the gene-disease db is customized with all ACMG-carrier-screening-list and IDH3A added. 
-Scripts="/mnt/nas/Genomics/Genome/FamilyRisk/PhenomePortal-FamilyRisk/Scripts"
+Scripts="/PhenomePortal-FamilyRisk/Scripts"
 bash $Scripts/FamilyRisk_family.sh --carrier \
 	-i rwgsF1 \
-	--sample-list /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/file_list.txt \
-	-o /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1 \
-	--ped /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/rwgs_F1.ped \
-	--customized-genedb /mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/carrier_rwgs1_customized_genelist.txt \
+	--sample-list /PhenomePortal-FamilyRisk/examples20260119/family-carrier-rwgs1/file_list.txt \
+	-o /PhenomePortal-FamilyRisk/examples20260119/family-carrier-rwgs1 \
+	--ped /PhenomePortal-FamilyRisk/examples20260119/family-carrier-rwgs1/rwgs_F1.ped \
+	--customized-genedb /PhenomePortal-FamilyRisk/examples20260119/family-carrier-rwgs1/carrier_rwgs1_customized_genelist.txt \
 	--genome GRCH38 --only-pass yes --carrier --run-pgx yes --af-clinvar 0.05 \
 	--fork 20 --threads 20 --pgsid PGS002106
 ```
 
 ### UI design
-Results are stored in `/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-carrier-rwgs1/Results`
+Results are stored in `/PhenomePortal-FamilyRisk/examples20260119/family-carrier-rwgs1/Results`
 It will be nice if the following contents could be included in the webpage:
 1) Couple Details: `family_information.txt`
 2) Variant Summary: `variant_summary.txt`

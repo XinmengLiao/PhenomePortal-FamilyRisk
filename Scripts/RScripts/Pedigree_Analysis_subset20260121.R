@@ -21,10 +21,10 @@ variant_info_file <- args[2]
 
 ## Files for the example of trio-family (IDH3A variant)
 # sampleid = "rwgs_F1"
-# result = "/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-newborn-rwgs1/Results/rwgsF1.txt"
-# ped_file = "/mnt/nas/Genomics/Genome/FamilyRisk/examples/rwgsF1/rwgs_F1.ped"
-# output_dir = "/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-newborn-rwgs1/Results"
-# variant_info_file = "/mnt/nas/Genomics/Genome/FamilyRisk/examples20260119/family-newborn-rwgs1/variant_info.txt"
+# result = "/PhenomePortal-FamilyRisk/examples20260119/family-newborn-rwgs1/Results/rwgsF1.txt"
+# ped_file = "/PhenomePortal-FamilyRisk/examples/rwgsF1/rwgs_F1.ped"
+# output_dir = "/PhenomePortal-FamilyRisk/examples20260119/family-newborn-rwgs1/Results"
+# variant_info_file = "/PhenomePortal-FamilyRisk/examples20260119/family-newborn-rwgs1/variant_info.txt"
 
 print(paste0("Now pocessing ", sampleid))
 print(paste0("Result file: ", result))

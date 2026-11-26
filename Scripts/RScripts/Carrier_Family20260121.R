@@ -24,13 +24,13 @@ results_dir <- file.path(output_dir, "Results")
 dir.create(results_dir, showWarnings = FALSE)
 
 if (location == "local"){
-  TR_removed_variant <- '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
+  TR_removed_variant <- '/PhenomePortal-FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/PhenomePortal-FamilyRisk/Datasets/genelists/Preset_screening_list_GenCC_20251125.txt"
 }
 
 if (location == "server"){
-  TR_removed_variant <- '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
-  genedb_file <- "/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list_GenCC_20251125.txt"
+  TR_removed_variant <- '/PhenomePortal-FamilyRisk/Datasets/TRpipelineRemovedVariants.txt'
+  genedb_file <- "/PhenomePortal-FamilyRisk/Datasets/Preset_screening_list_GenCC_20251125.txt"
 }
 
 print(paste0("Now pocessing ", sampleid))

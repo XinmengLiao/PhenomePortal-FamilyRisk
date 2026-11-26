@@ -30,7 +30,7 @@ config = {
         'customized_genedb_file': sys.argv[4],
         'compound_het': sys.argv[5],
         'data_type': sys.argv[6],
-        'screening_list': '/Users/xinmengliao/Documents/Project/20250710_FamilyRisk/Datasets/genelists/Preset_screening_list20251125.txt'
+        'screening_list': '/PhenomePortal-FamilyRisk/Datasets/genelists/Preset_screening_list20251125.txt'
     },
     "sysmed": {
         "fileName": sys.argv[1],
@@ -39,7 +39,7 @@ config = {
         'customized_genedb_file': sys.argv[4],
         'compound_het': sys.argv[5],
         'data_type': sys.argv[6],
-        'screening_list': '/mnt/nas/Genomics/Genome/FamilyRisk/Datasets/Preset_screening_list20251125.txt'
+        'screening_list': '/PhenomePortal-FamilyRisk/Datasets/Preset_screening_list20251125.txt'
     }
 }
 
