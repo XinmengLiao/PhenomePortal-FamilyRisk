@@ -7,10 +7,11 @@ FamilyRisk also features the **FamilyRiskAI**, an intelligent chatbox assist cli
 
 📍 **Access FamilyRisk:** https://www.phenomeportal.org/familyrisk
 
+<br>
 <div align="center">
-<img width="75%" alt="FamilyRisk workflow"
-     src="https://github.com/user-attachments/assets/68586637-7681-45f0-83c8-d9ffc8c6d775" />
+<img width="75%" alt="image" src="https://github.com/user-attachments/assets/52e08b1a-0de4-4376-9131-389851b94881" />
 </div>
+<br>
 
 
 ## Contents
