@@ -1,7 +1,7 @@
 ## 🔹 Individual-level Newborn Screening for Copy Number Variants and Structural Variants
 
 ### 1. Upload genomic data and set configurations
-- From the **Home** page, choose **“Newborn Screening - CNV / Structural Variant Analysis**. Click **"Continue"**. 
+- From the **Home** page, choose **"CNV/SV Analysis"**. Click **"Continue"**. 
 - Input sample name, upload genomic data in compressed VCF format (.vcf.gz)
 - Upload additional SNVs/INDELs compressed VCF format files (.vcf.gz) to detect the compound heterozygous deletions in CNV/SV.   
 - Upload customized screening panel (.txt/.tsv) or select one or more preset screening lists. 

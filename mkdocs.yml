@@ -24,6 +24,8 @@ nav:
   - Home: Home.md
   - Database: Database.md
   - Tutorials:
+      - Homepage: Homepage.md
+      - FamilyRiskAI: FamilyRiskAI.md
       - Newborn Screening - Individual: Newborn-Screening-‐-Individual.md
       - Newborn Screening - Family: Newborn-Screening-‐-Family.md
       - Newborn Screening - Population: Newborn-Screening-‐-Population.md

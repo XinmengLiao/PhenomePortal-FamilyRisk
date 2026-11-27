@@ -1,27 +1,37 @@
 ## 🔹 Individual-level Newborn Screening 
 
 ### 1. Upload genomic data and set configurations
-- From the **Home** page, choose **“Newborn Screening - Individual”**. Click **"Continue"**. 
+- From the **Home** page, choose **"Newborn Screening"**. Click **"Continue"**. 
 - Input sample name, upload genomic data in compressed VCF format (.vcf.gz). 
 - Upload customized screening panel (.txt/.tsv) or select one or more preset screening lists. 
 - Select gender, reference genome version.
-- Set the parameters for filtering variants (global minor allele frequency, predicted scores, clinical pathogenicity). 
-- Enter any of the PGS Catalog Identifiers if needed. 
-- Select to run PGx profiling or not. 
-- Click **"Submit"** to proceed.  
+- Select variants with high sequencing quality and/or reported in ClinVar in **“Variant selection"**.
+- Set the parameters for filtering variants in **"Advanced variant filters"**: (global minor allele frequency, predicted scores, clinical pathogenicity). 
+
+    For explortaory analyses in the **"Research options"**: 
+- Polygenic risk score calculation: enter any of the PGS Catalog Identifiers if needed. 
+- Pharmacogenomics: select to run PGx profiling or not. 
+
+    Click **"Submit"** to proceed.  
+
 
 <br>
 
 ### 2. View Results
 The submitted job and job status are presented in **"Analysis Jobs"** on the homepage. \
-Once the job is completed, click the job name to view all results. \
+Once the job is completed, click the job name to view all results. 
+
+FamilyRisk offers **"Clinical Mode"** for monogenic disease screening and clinical reporting, and **"Research Mode"** for exploratory analyses of complex traits by polygenic risk scores and drug response by pharmacogenomics. The results are clearly seperated with tag **"CLINICAL"** or **"RESEARCH"**. 
+
 Results are organized into 6 sections:
 - Sample & Variant Summary: This section summarizes the sample ID, gender, number of variants retained, and clinical P/LP variants (both ClinVar and ACMG P/LP). 
 - Screen-positive Results: This section presents the potential monogenic rare diseases identified in the newborn. These diseases are caused by both ClinVar and ACMG P/LP variants. 
 - Disease Carrier Status: This section presents the potential disease carriers. These diseases are caused by both ClinVar and ACMG P/LP variants, which are heterozygous states and associated with recessive diseases. 
-- Pharmacogenomics: This section provides a report summarizing all identified pharmacogenomics diplotypes in the newborns via PharmCat. Detailed explanations and recommendations are illustrated in the structured report. 
-- Polygenic Risk Scores: This section 
 - Variant Details: This section presents all details for the filtered variants.
+
+Results sections of research mode:
+- Pharmacogenomics: This section provides a report for each family member summarizing all identified pharmacogenomics diplotypes in the newborns via PharmCat. Detailed explanations and recommendations are illustrated in the structured report. 
+- Polygenic Risk Scores: This section provides polygenic scores of each family member and reference population regarding the required PGS model. The similarity scores are also provided for genetic clustering. Information is also summarized into a strctured report.  
 
 <br>
 

@@ -1,28 +1,37 @@
 ## 🔹 Family-level Newborn Screening 
 
 ### 1. Upload genomic data and set configurations
-- From the **Home** page, choose **“Newborn Screening - Family**. Click **"Continue"**. 
-- Input sample name, upload genomic data in compressed VCF format (.vcf.gz), upload PED file illustrating the family relationship.  
+- From the **Home** page, choose **“Carrier Screening - Family**. Click **"Continue"**. 
+- Input sample name, upload genomic data in compressed VCF format (.vcf.gz), and upload PED file illustrating the parents' relationship.  
 - Upload customized screening panel (.txt/.tsv) or select one or more preset screening lists. 
 - Select reference genome version.
-- Set the parameters for filtering variants (global minor allele frequency, predicted scores, clinical pathogenicity). 
-- Enter any of the PGS Catalog Identifiers if needed. 
-- Select to run PGx profiling or not. 
-- Click **"Submit"** to proceed.  
+- Select variants with high sequencing quality and/or reported in ClinVar in **“Variant selection"**.
+- Set the parameters for filtering variants in **"Advanced variant filters"**: (global minor allele frequency, predicted scores, clinical pathogenicity). 
+
+    For explortaory analyses in the **"Research options"**: 
+- Polygenic risk score calculation: enter any of the PGS Catalog Identifiers if needed. 
+- Pharmacogenomics: select to run PGx profiling or not. 
+
+    Click **"Submit"** to proceed.  
 
 <br>
 
 ### 2. View Results
 The submitted job and job status are presented in **"Analysis Jobs"** on the homepage. \
-Once the job is completed, click the job name to view all results. \
-Results are organized into 7 sections:
-- Family Information: This section summarizes the family relationships from PED file. 
-- Variant Summary: This section summarizes clinical P/LP variants (both ClinVar or ACMG P/LP). 
-- Screen-positive Results: This section presents the potential monogenic rare diseases identified in the newborns. These diseases are caused by both ClinVar and ACMG P/LP variants. 
-- Disease Carrier Status: This section presents the potential disease carriers identified in the newborns. These diseases are caused by both ClinVar and ACMG P/LP variants, which are heterozygous states and associated with recessive diseases. 
+Once the job is completed, click the job name to view all results.
+
+FamilyRisk offers **"Clinical Mode"** for monogenic disease screening and clinical reporting, and **"Research Mode"** for exploratory analyses of complex traits by polygenic risk scores and drug response by pharmacogenomics. The results are clearly seperated with tag **"CLINICAL"** or **"RESEARCH"**. 
+
+Results sections of clinical mode:
+- Sample & Variant Summary: This section summarizes 1) the family members' relationships from PED file; 2) the total number of screened variant and clinical P/LP variants (both ClinVar or ACMG P/LP); 3) the total number of positive findings of rare monogenic diseases and carrier status. 
+- Screen-positive Results: This section presents the screen-positive findings related to potential deleterious variants associated with the monogenic rare disease from the screening list. 
+- Disease Carrier Status: This section presents the recessive disease that would be potentially transmitted to the offspring. These diseases are caused by both ClinVar and ACMG P/LP variants. 
+- Findings by Person: This section summarises how variants are distributed across family members, covering both the variants in screen-positive findings and all screened variants.
+- Variant Details: This section presents all details for the filtered variants.
+
+Results sections of research mode:
 - Pharmacogenomics: This section provides a report for each family member summarizing all identified pharmacogenomics diplotypes in the newborns via PharmCat. Detailed explanations and recommendations are illustrated in the structured report. 
 - Polygenic Risk Scores: This section provides polygenic scores of each family member and reference population regarding the required PGS model. The similarity scores are also provided for genetic clustering. Information is also summarized into a strctured report.  
-- Variant Details: This section presents all details for the filtered variants.
 
 <br>
 
