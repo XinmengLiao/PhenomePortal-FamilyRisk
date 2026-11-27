@@ -5,3 +5,4 @@ pharmcat.log
 work/
 .nextflow.log*
 site/.DS_Store
+.DS_Store
