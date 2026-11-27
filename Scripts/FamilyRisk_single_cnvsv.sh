@@ -4,7 +4,7 @@
 
 
 # Default values
-ANNOTSV='/PhenomePortal-FamilyRisk/tools/AnnotSV/bin/AnnotSV'
+ANNOTSV='<path/to/AnnotSV>'
 
 # Function to display usage
 usage() {

@@ -435,10 +435,10 @@ if [[ "$RUNPGX" == "no" ]]; then
     echo "Skipping PGx analysis as --run-pgx is not set to 'yes'."
     exit 0
 else
-    pharmcat="/PhenomePortal-FamilyRisk/tools/pharmcat/pharmcat-3.1.1-all.jar"
-    pharmcat_preprocessor="/PhenomePortal-FamilyRisk/tools/pharmcat/preprocessor/pharmcat_vcf_preprocessor"
-    preprocessor_ref="/PhenomePortal-FamilyRisk/tools/pharmcat/reference.fna.bgz"
-    preprocessor_position="/PhenomePortal-FamilyRisk/tools/pharmcat/pharmcat_positions_3.1.1.vcf.bgz"
+    pharmcat="<path/to/pharmcat-3.1.1-all.jar>"
+    pharmcat_preprocessor="<path/to/pharmcat_vcf_preprocessor>"
+    preprocessor_ref="<path/to/pharmcat_reference.fna.bgz>"
+    preprocessor_position="<path/to/pharmcat_positions_3.1.1.vcf.bgz>"
 
     PHARMCAT_PREPROCESSED_VCF="${OUTPUT_DIR}/${INPUT_SAMPLE}_biallelic_nodup_pass.preprocessed.vcf.bgz"
     echo $PHARMCAT_PREPROCESSED_VCF

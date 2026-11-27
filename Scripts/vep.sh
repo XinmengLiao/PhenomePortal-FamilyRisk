@@ -5,7 +5,7 @@
 # NewbornRisk using VEP v113, VarXOMics using VEP v114
 
 # Default values
-VEP_CACHE='/PhenomePortal-FamilyRisk/vep_cache'
+VEP_CACHE='<path/to/vep_cache>'
 
 
 # Function to display usage
@@ -116,8 +116,8 @@ printf "vep cache: 113 \nvep version: 113 \n"
 
 
 # Add 'chr' to chromosome if it is absence in the vcf file
-BCFTOOLS="/PhenomePortal-FamilyRisk/miniconda3/envs/demultiplex/bin/bcftools"
-CHR_FILE='/PhenomePortal-FamilyRisk/tools/picard/chr_map.txt'
+BCFTOOLS="<path/to/bcftools>"
+CHR_FILE='<path/to/chr_map.txt>'
 CHR_VCF="${VCF_FILE}_chr.vcf.gz"
 $BCFTOOLS annotate --rename-chrs $CHR_FILE ${VCF_FILE} -Oz -o $CHR_VCF
 
@@ -161,9 +161,9 @@ if [[ "$GENOME_VERSION" == "GRCH38" ]]; then
 elif [[ "$GENOME_VERSION" == "GRCH37" ]]; then
     echo "Reference genome is GRCh37. Liftover to GRCh38..."
 
-    PICARD='/PhenomePortal-FamilyRisk/miniconda3/envs/vep114/share/picard-3.4.0-0/picard.jar'
-    CHAIN_FILE="/PhenomePortal-FamilyRisk/tools/picard/hg19ToHg38.over.chain"
-    REF_FASTA="/PhenomePortal-FamilyRisk/tools/picard/hg38.fa"
+    PICARD='<path/to/picard.jar>'
+    CHAIN_FILE="<path/to/hg19ToHg38.over.chain>"
+    REF_FASTA="<path/to/hg38.fa>"
 
     # decompress VCF for liftover
     gunzip -c -f $CHR_VCF > "$OUTPUT_DIR/${INPUT_SAMPLE}_lifeover_tmp_chr.vcf" 

@@ -3,14 +3,14 @@
 # This script is for running PRS for merged VCF files, including cohort and family-based analysis. 
 
 # scripts for steamline the whole pipeline
-beagle="/PhenomePortal-FamilyRisk/tools/beagle5.jar"
-nextflow="/PhenomePortal-FamilyRisk/tools/nextflow"
-assembly38='/PhenomePortal-FamilyRisk/vep_cache/vep114_assembly/Homo_sapiens.GRCh38.dna.toplevel.fa.gz'
-assembly37='/PhenomePortal-FamilyRisk/vep_cache/vep114_assembly/Homo_sapiens.GRCh37.dna.toplevel.fa.gz'
-map_dir38='/PhenomePortal-FamilyRisk/Datasets/Beagle/plink.GRCh38/no_chr_in_chrom_field'
-map_dir37='/PhenomePortal-FamilyRisk/Datasets/Beagle/plink.GRCh37/no_chr_in_chrom_field'
-ref_dir38='/PhenomePortal-FamilyRisk/1KGenome/GRCh38/no_chr_in_chrom_field'
-ref_dir37='/PhenomePortal-FamilyRisk/1KGenome/GRCh37-Phase3/no_chr_in_chrom_field'
+beagle="<path/to/beagle5.jar>"
+nextflow="<path/to/nextflow>"
+assembly38='<path/to/Homo_sapiens.GRCh38.dna.toplevel.fa.gz>'
+assembly37='<path/to/Homo_sapiens.GRCh37.dna.toplevel.fa.gz>'
+map_dir38='<path/to/beagle_plink_map_GRCh38>'
+map_dir37='<path/to/beagle_plink_map_GRCh37>'
+ref_dir38='<path/to/1000Genomes_reference_panel_GRCh38>'
+ref_dir37='<path/to/1000Genomes_reference_panel_GRCh37>'
 remove_chr_file='/PhenomePortal-FamilyRisk/Scripts/remove_chrs.txt'
 contig_header='/PhenomePortal-FamilyRisk/Scripts/contigs.txt'
 # Function to display usage
@@ -290,7 +290,7 @@ if [[ -n "$PGSID" ]]; then
         --pgs_id $PGSID \
         --target_build $target_build \
         --min_overlap 0.01 \
-        --run_ancestry /PhenomePortal-FamilyRisk/Datasets/pgsc_HGDP+1kGP_v1.tar.zst > $OUTPUT_DIR/pgscalc.log 2>&1
+        --run_ancestry "<path/to/pgsc_HGDP+1kGP_v1.tar.zst>" > $OUTPUT_DIR/pgscalc.log 2>&1
 
 elif [[ -n "$PGPID" ]]; then
     echo "Use PGPID: $PGPID. "
@@ -299,7 +299,7 @@ elif [[ -n "$PGPID" ]]; then
         --pgp_id $PGPID \
         --target_build $target_build \
         --min_overlap 0.01 \
-        --run_ancestry /PhenomePortal-FamilyRisk/Datasets/pgsc_HGDP+1kGP_v1.tar.zst > $OUTPUT_DIR/pgscalc.log 2>&1
+        --run_ancestry "<path/to/pgsc_HGDP+1kGP_v1.tar.zst>" > $OUTPUT_DIR/pgscalc.log 2>&1
 
 elif [[ -n "$EFOID" ]]; then
     echo "Use EFOID: $EFOID. "
@@ -309,7 +309,7 @@ elif [[ -n "$EFOID" ]]; then
         --efo_id $EFOID \
         --target_build $target_build \
         --min_overlap 0.01 \
-        --run_ancestry /PhenomePortal-FamilyRisk/Datasets/pgsc_HGDP+1kGP_v1.tar.zst > $OUTPUT_DIR/pgscalc.log 2>&1
+        --run_ancestry "<path/to/pgsc_HGDP+1kGP_v1.tar.zst>" > $OUTPUT_DIR/pgscalc.log 2>&1
 
 fi
 
