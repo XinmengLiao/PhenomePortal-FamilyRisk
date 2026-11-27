@@ -139,3 +139,10 @@ Each function of FamilyRisk is documented with step-by-step Markdown guides:
 | **Newborn Screening-CNV/SV** | Annotate individual-level copy number variants and structural variants in the newborn. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Newborn-Screening-%E2%80%90-CNV-%26-SV/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Newborn-Screening-%E2%80%90-CNV-&-SV) |
 | **Carrier Screening-Individual** | Individual-level carrier screening. Identify potential recessive diseases that might inherit by the offspring. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Carrier-Screening-%E2%80%90-Individual/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Carrier-Screening-%E2%80%90-Individual) |
 | **Carrier Screening-Family** | Couple-level carrier screening. Identify potential recessive diseases that might inherit by the offspring. | [Documentation](https://xinmengliao.github.io/PhenomePortal-FamilyRisk/Carrier-Screening-%E2%80%90-Family/) | [Wiki](https://github.com/XinmengLiao/PhenomePortal-FamilyRisk/wiki/Carrier-Screening-%E2%80%90-Family) |
+
+
+## Cite Us
+
+If you use FamilyRisk in your research, please cite:
+
+> FamilyRisk preprint, *Research Square*, 2026.
